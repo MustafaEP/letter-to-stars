@@ -1,0 +1,13 @@
+services:
+  lettertostars-web:
+    build:
+      context: ../../../frontend
+    image: lettertostars-web:latest
+    container_name: lettertostars-web
+    restart: always
+    networks:
+      - edge
+
+networks:
+  edge:
+    external: true
