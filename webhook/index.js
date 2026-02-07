@@ -72,5 +72,5 @@ app.post("/deploy", (req, res) => {
   
 
 app.listen(9000, () => {
-    console.log("- Secure webhook listener running on port 9000");
+    console.log("* Secure webhook listener running on port 9000");
 })
