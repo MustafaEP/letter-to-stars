@@ -70,7 +70,7 @@ app.post("/deploy", (req, res) => {
     });
   });
   
-
-app.listen(9000, () => {
-    console.log("* Secure webhook listener running on port 9000");
-})
+const PORT = process.env.PORT || 9000;
+app.listen(9000, "127.0.0.1", () => {
+    console.log(`Webhook listening on 127.0.0.1:${PORT}`);
+});
