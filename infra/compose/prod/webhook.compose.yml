@@ -1,0 +1,17 @@
+services:
+  lettertostars-webhook:
+    build:
+      context: ../../..
+      dockerfile: webhook/Dockerfile
+    container_name: lettertostars-webhook
+    env_file:
+      - ../../../webhook/.env
+    restart: unless-stopped
+    expose:
+      - "9000"
+    networks:
+      - edge
+
+networks:
+  edge:
+    external: true
