@@ -26,34 +26,50 @@ function verifySignature(req) {
   
     // Buffer length check (CRITICAL)
     if (signature.length !== digest.length) {
-      return false;
+        return false;
     }
   
     return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(digest)
+        Buffer.from(signature),
+        Buffer.from(digest)
     );
-  }
+}
   
 
 
 app.post("/deploy", (req, res) => {
-    if (!verifySignature(req)) {
-        console.warn("Invalid webhook signature");
-        return res.status(401).send("Invalid signature");
+    const event = req.headers["x-github-event"];
+  
+    // 1 - Ping event (GitHub test)
+    if (event === "ping") {
+      console.log("🟢 GitHub ping received");
+      return res.status(200).send("pong");
     }
   
-    console.log("- Verified webhook received, deploying...");
+    // 2 - Sadece push event kabul et
+    if (event !== "push") {
+      console.warn("⚠️ Unsupported GitHub event:", event);
+      return res.status(200).send("ignored");
+    }
+  
+    // 3 - HMAC doğrulama
+    if (!verifySignature(req)) {
+      console.warn("❌ Invalid webhook signature");
+      return res.status(401).send("Invalid signature");
+    }
+  
+    console.log("- Verified push webhook received, deploying...");
   
     exec("/opt/letter-to-stars/scripts/deploy.sh", (err, stdout, stderr) => {
-        if (err) {
-                console.error(stderr);
-                return res.status(500).send("Deploy failed");
-        }
-        console.log("- Deploy script output: " + stdout);
-        res.send("Deploy completed successfully");
+      if (err) {
+        console.error(stderr);
+        return res.status(500).send("Deploy failed");
+      }
+      console.log("- Deploy script output: " + stdout);
+      res.status(200).send("Deploy successful");
     });
-});
+  });
+  
 
 app.listen(9000, () => {
     console.log("- Secure webhook listener running on port 9000");
