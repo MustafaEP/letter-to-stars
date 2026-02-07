@@ -1,9 +1,15 @@
-node_modules
+# env
 .env
-.env.local
-.env.production
-.env.development
-venv/
+.env.*
+*.env
+!*.env.example
+
+# python
 __pycache__/
+.venv/
+venv/
+
+# node
+node_modules/
 dist/
 build/
