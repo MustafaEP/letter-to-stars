@@ -15,3 +15,7 @@ services:
 networks:
   edge:
     external: true
+
+    volumes:
+      - /opt/letter-to-stars:/opt/letter-to-stars:ro
+  
