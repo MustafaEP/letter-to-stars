@@ -42,35 +42,36 @@ app.post("/deploy", (req, res) => {
   
     // 1 - Ping event (GitHub test)
     if (event === "ping") {
-      console.log("GitHub ping received");
-      return res.status(200).send("pong");
+        console.log("GitHub ping received");
+        return res.status(200).send("pong");
     }
   
     // 2 - Sadece push event kabul et
     if (event !== "push") {
-      console.warn("Unsupported GitHub event:", event);
-      return res.status(200).send("ignored");
+        console.warn("Unsupported GitHub event:", event);
+        return res.status(200).send("ignored");
     }
   
     // 3 - HMAC doğrulama
     if (!verifySignature(req)) {
-      console.warn("Invalid webhook signature");
-      return res.status(401).send("Invalid signature");
+        console.warn("Invalid webhook signature");
+        return res.status(401).send("Invalid signature");
     }
   
     console.log("- Verified push webhook received, deploying...");
   
     exec("/opt/letter-to-stars/scripts/deploy.sh", (err, stdout, stderr) => {
-      if (err) {
-        console.error(stderr);
-        return res.status(500).send("Deploy failed");
-      }
-      console.log("- Deploy script output: " + stdout);
-      res.status(200).send("Deploy successful");
+        if (err) {
+            console.error(stderr);
+            return res.status(500).send("Deploy failed");
+        }
+        console.log("- Deploy script output: " + stdout);
+        res.status(200).send("Deploy successful");
     });
-  });
+});
   
 const PORT = process.env.PORT || 9000;
-app.listen(9000, "127.0.0.1", () => {
+
+app.listen(PORT, "127.0.0.1", () => {
     console.log(`Webhook listening on 127.0.0.1:${PORT}`);
 });
