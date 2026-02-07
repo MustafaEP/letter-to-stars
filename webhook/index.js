@@ -42,19 +42,19 @@ app.post("/deploy", (req, res) => {
   
     // 1 - Ping event (GitHub test)
     if (event === "ping") {
-      console.log("🟢 GitHub ping received");
+      console.log("GitHub ping received");
       return res.status(200).send("pong");
     }
   
     // 2 - Sadece push event kabul et
     if (event !== "push") {
-      console.warn("⚠️ Unsupported GitHub event:", event);
+      console.warn("Unsupported GitHub event:", event);
       return res.status(200).send("ignored");
     }
   
     // 3 - HMAC doğrulama
     if (!verifySignature(req)) {
-      console.warn("❌ Invalid webhook signature");
+      console.warn("Invalid webhook signature");
       return res.status(401).send("Invalid signature");
     }
   
