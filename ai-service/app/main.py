@@ -1,7 +1,16 @@
 from fastapi import FastAPI
-from app.api.health import router as health_router
-from app.core.config import settings
+from app.schemas.rewrite import RewriteRequest, RewriteResponse
+from app.services.rewrite_service import rewrite_text
 
-app = FastAPI(title=settings.app_name)
+app = FastAPI(title="Letter to Stars AI")
 
-app.include_router(health_router)
+@app.post("/rewrite", response_model=RewriteResponse)
+def rewrite(req: RewriteRequest):
+    return rewrite_text(req.text, req.level)
+    
+@app.get("/health")
+def health():
+    return {
+        "status": "ai-service ok",
+        "service": "letter-to-stars-ai"
+    }
