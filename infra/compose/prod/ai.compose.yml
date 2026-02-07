@@ -1,0 +1,13 @@
+services:
+  lettertostars-ai:
+    build:
+      context: ../../../ai-service
+    image: lettertostars-ai:latest
+    container_name: lettertostars-ai
+    restart: always
+    networks:
+      - edge
+
+networks:
+  edge:
+    external: true
