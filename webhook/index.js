@@ -16,18 +16,25 @@ app.use(
 const SECRET = "letter-to-stars-secret";
 
 function verifySignature(req) {
-    const signature = req.headers['x-hub-signature-256'];
-
-    if(!signature) return false;
-
-    const hmac = crypto.createHmac('sha256', SECRET);
-    const digest = hmac.update(req.rawBody).digest('hex');
-
+    const signature = req.headers["x-hub-signature-256"];
+    if (!signature || !signature.startsWith("sha256=")) {
+      return false;
+    }
+  
+    const hmac = crypto.createHmac("sha256", SECRET);
+    const digest = "sha256=" + hmac.update(req.rawBody).digest("hex");
+  
+    // Buffer length check (CRITICAL)
+    if (signature.length !== digest.length) {
+      return false;
+    }
+  
     return crypto.timingSafeEqual(
-        Buffer.from(signature), 
-        Buffer.from(digest)
+      Buffer.from(signature),
+      Buffer.from(digest)
     );
-}
+  }
+  
 
 
 app.post("/deploy", (req, res) => {
