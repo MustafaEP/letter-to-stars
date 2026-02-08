@@ -3,7 +3,6 @@ services:
     build:
       context: ../../../backend
     image: lettertostars-backend:latest
-    container_name: lettertostars-backend
     restart: always
     environment:
       - APP_VERSION=${APP_VERSION:-dev}

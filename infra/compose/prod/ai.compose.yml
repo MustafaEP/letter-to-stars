@@ -3,7 +3,6 @@ services:
     build:
       context: ../../../ai-service
     image: lettertostars-ai:latest
-    container_name: lettertostars-ai
     restart: always
     environment:
       - APP_VERSION=${APP_VERSION:-dev}
