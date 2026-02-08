@@ -1,87 +1,87 @@
 const express = require("express");
-const { spawn } = require("child_process");
 const crypto = require("crypto");
+const { spawn } = require("child_process");
+const fs = require("fs");
 
 const app = express();
 
-// RAW BODY (for HMAC verification)
+// Raw body to verify GitHub HMAC
 app.use(
-    express.json({
-        verify: (req, res, buf) => {
-        req.rawBody = buf;
-        },
-    })
+  express.json({
+    verify: (req, _res, buf) => {
+      req.rawBody = buf;
+    },
+  })
 );
 
-// ENV (prod'da mutlaka ENV ile ver)
-const SECRET = process.env.WEBHOOK_SECRET || "letter-to-stars-secret";
+// ENV
+const PORT = Number(process.env.PORT || 9000);
+const HOST = process.env.HOST || "0.0.0.0"; // host'ta çalışacak
+const SECRET = process.env.WEBHOOK_SECRET;  // ZORUNLU
 const DEPLOY_SCRIPT = process.env.DEPLOY_SCRIPT || "/opt/letter-to-stars/scripts/deploy.sh";
-const LOG_FILE = process.env.WEBHOOK_LOG_FILE || "/opt/letter-to-stars/logs/webhook-deploy.log";
+const LOG_FILE = process.env.WEBHOOK_DEPLOY_LOG || "/opt/letter-to-stars/logs/webhook-deploy.log";
 
-function verifySignature(req) {
-    const signature = req.headers["x-hub-signature-256"];
-    if (!signature || !signature.startsWith("sha256=")) return false;
-
-    const hmac = crypto.createHmac("sha256", SECRET);
-    const digest = "sha256=" + hmac.update(req.rawBody || Buffer.from("")).digest("hex");
-
-    // timingSafeEqual requires same length
-    if (signature.length !== digest.length) return false;
-
-    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
+if (!SECRET) {
+  console.error("WEBHOOK_SECRET is missing. Set it in /opt/letter-to-stars/webhook/.env");
+  process.exit(1);
 }
 
+function verifySignature(req) {
+  const sig = req.headers["x-hub-signature-256"];
+  if (!sig || !sig.startsWith("sha256=")) return false;
+
+  const hmac = crypto.createHmac("sha256", SECRET);
+  const digest = "sha256=" + hmac.update(req.rawBody || Buffer.from("")).digest("hex");
+
+  if (sig.length !== digest.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(digest));
+}
+
+app.get("/health", (_req, res) => res.status(200).json({ ok: true }));
+
 app.post("/deploy", (req, res) => {
-    const event = req.headers["x-github-event"];
-    const delivery = req.headers["x-github-delivery"];
+  const event = req.headers["x-github-event"];
+  const delivery = req.headers["x-github-delivery"];
 
-    // 1) Ping event
-    if (event === "ping") {
-        console.log("GitHub ping received", { delivery });
-        return res.status(200).send("pong");
-    }
+  // ping
+  if (event === "ping") {
+    console.log("GitHub ping received", { delivery });
+    return res.status(200).send("pong");
+  }
 
-    // 2) Only push events
-    if (event !== "push") {
-        console.warn("Ignored GitHub event:", event, { delivery });
-        return res.status(200).send("ignored");
-    }
+  // only push
+  if (event !== "push") {
+    console.log("Ignored event", { event, delivery });
+    return res.status(200).send("ignored");
+  }
 
-    // 3) HMAC verification
-    if (!verifySignature(req)) {
-        console.warn("Invalid webhook signature", { delivery });
-        return res.status(401).send("Invalid signature");
-    }
+  // signature
+  if (!verifySignature(req)) {
+    console.warn("Invalid signature", { delivery });
+    return res.status(401).send("Invalid signature");
+  }
 
-    // 4) IMPORTANT: Respond immediately to GitHub (avoid 499 timeouts)
-    res.status(200).send("OK");
+  // IMPORTANT: respond immediately (prevents 499)
+  res.status(200).send("OK");
 
-    // 5) Run deploy in background (detached)
-    console.log("Verified push received. Starting deploy...", { delivery });
+  // run deploy in background, log to file
+  try {
+    fs.mkdirSync("/opt/letter-to-stars/logs", { recursive: true });
+    const out = fs.openSync(LOG_FILE, "a");
+    const err = fs.openSync(LOG_FILE, "a");
 
-    try {
-        const child = spawn(DEPLOY_SCRIPT, [], {
-        detached: true,
-        stdio: ["ignore", "append", "append"],
-        // append output to a log file on the SAME filesystem
-        // Note: 'append' works in Node >= v16 on Linux
-        // If it fails, we fallback below.
-        shell: false,
-        });
+    const child = spawn(DEPLOY_SCRIPT, [], {
+      detached: true,
+      stdio: ["ignore", out, err],
+      shell: false,
+    });
+    child.unref();
 
-        // If your Node version doesn't support "append" stdio:
-        // use fs.createWriteStream(LOG_FILE, { flags: "a" }) approach (see below)
-        child.unref();
-    } catch (e) {
-        console.error("Failed to spawn deploy script:", e, { delivery });
-    }
+    console.log("Deploy started", { delivery });
+  } catch (e) {
+    console.error("Failed to start deploy", e, { delivery });
+  }
 });
-
-// Health endpoint
-app.get("/health", (req, res) => res.status(200).json({ ok: true }));
-
-const PORT = process.env.PORT || 9000;
-const HOST = process.env.HOST || "0.0.0.0";
 
 app.listen(PORT, HOST, () => {
   console.log(`Webhook listening on ${HOST}:${PORT}`);
