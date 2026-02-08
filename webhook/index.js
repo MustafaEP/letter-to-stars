@@ -85,6 +85,17 @@ app.post("/deploy", (req, res) => {
       stdio: ["ignore", out, err],
       shell: false,
     });
+    child.on("error", (e) => {
+      try {
+        fs.appendFileSync(
+          LOG_FILE,
+          `\n[webhook] Failed to spawn deploy script: ${String(e)}\n`
+        );
+      } catch (_) {
+        // ignore
+      }
+      console.error("Failed to spawn deploy script", e, { delivery });
+    });
     child.unref();
 
     console.log("Deploy started", { delivery });
