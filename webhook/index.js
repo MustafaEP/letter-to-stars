@@ -79,7 +79,8 @@ app.post("/deploy", (req, res) => {
     const out = fs.openSync(LOG_FILE, "a");
     const err = fs.openSync(LOG_FILE, "a");
 
-    const child = spawn(DEPLOY_SCRIPT, [], {
+    // Run via bash so we don't depend on exec bit / shebang quirks.
+    const child = spawn("bash", [DEPLOY_SCRIPT], {
       detached: true,
       stdio: ["ignore", out, err],
       shell: false,
