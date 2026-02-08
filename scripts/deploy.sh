@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "Letter to Stars | Frontend Deploy Started"
+echo "Letter to Stars | Full Deploy Started"
 
 # ---- Config ----
 PROJECT_ROOT="${PROJECT_ROOT:-/opt/letter-to-stars}"
@@ -11,6 +11,10 @@ COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-letter-to-stars}"
 
 # Health check URL (public)
 BASE_URL="${BASE_URL:-https://lettertostars.mustafaerhanportakal.com}"
+
+# Optional: API health path (adjust if you have /api/health)
+API_HEALTH_PATH="${API_HEALTH_PATH:-/api/health}"
+AI_HEALTH_PATH="${AI_HEALTH_PATH:-/ai/health}"
 
 # ---- Logging ----
 LOG_DIR="$PROJECT_ROOT/logs"
@@ -36,20 +40,31 @@ fi
   echo "BASE_URL=$BASE_URL"
   echo "-----------------------------------"
 
-  echo "Pulling latest code..."
+  echo "Pulling latest code (hard reset to origin/main)..."
   cd "$PROJECT_ROOT"
-  git pull
+  git fetch origin main
+  git reset --hard origin/main
 
-  echo "Building & starting frontend container..."
+  echo "Building & starting ALL services..."
   cd "$COMPOSE_DIR"
-  docker compose -p "$COMPOSE_PROJECT_NAME" -f frontend.compose.yml up -d --build
+
+  docker compose -p "$COMPOSE_PROJECT_NAME" \
+    -f frontend.compose.yml \
+    -f backend.compose.yml \
+    -f ai.compose.yml \
+    -f webhook.compose.yml \
+    up -d --build
 
   echo "Reloading reverse-proxy nginx..."
   docker exec -i "$PROXY_CONTAINER" nginx -s reload
 
   echo "Running health checks..."
-  curl -fsS "$BASE_URL/" >/dev/null
+  curl -fsS "$BASE_URL/" >/dev/null || (echo "Frontend health failed" && exit 1)
 
-  echo "Frontend deploy completed successfully"
+  # Eğer bu endpointler henüz yoksa yoruma alabilirsin
+  curl -fsS "$BASE_URL$API_HEALTH_PATH" >/dev/null || echo "WARN: API health endpoint not reachable: $BASE_URL$API_HEALTH_PATH"
+  curl -fsS "$BASE_URL$AI_HEALTH_PATH" >/dev/null || echo "WARN: AI health endpoint not reachable: $BASE_URL$AI_HEALTH_PATH"
+
+  echo "Full deploy completed successfully"
   echo "== Deploy finished: $(date -Is) =="
 } |& tee -a "$LOG_FILE"
