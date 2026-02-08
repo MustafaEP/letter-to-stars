@@ -5,6 +5,8 @@ services:
     image: lettertostars-ai:latest
     container_name: lettertostars-ai
     restart: always
+    environment:
+      - APP_VERSION=${APP_VERSION:-dev}
     networks:
       - edge
 

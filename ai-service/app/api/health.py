@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+import os
 
 router = APIRouter()
 
@@ -7,5 +8,5 @@ def health():
     return {
         "status": "ai-service ok",
         "service": "letter-to-stars-ai",
-        "version": "1.0.0"
+        "version": os.getenv("APP_VERSION", "dev")
     }

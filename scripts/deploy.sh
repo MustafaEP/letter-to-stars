@@ -56,6 +56,8 @@ fi
   git checkout -B "$DEPLOY_BRANCH" "$DEPLOY_REMOTE/$DEPLOY_BRANCH"
   git reset --hard "$DEPLOY_REMOTE/$DEPLOY_BRANCH"
   echo "Updated ref: $(git rev-parse --abbrev-ref HEAD) @ $(git rev-parse --short HEAD)"
+  export APP_VERSION="${APP_VERSION:-$(git rev-parse --short HEAD)}"
+  echo "APP_VERSION=$APP_VERSION"
 
   echo "Building & starting backend container..."
   cd "$COMPOSE_DIR"
