@@ -156,5 +156,3 @@ Bu proje ile:
 Bu proje kişisel / eğitim amaçlıdır.
 
 ---
-
-deploy test
