@@ -5,7 +5,7 @@ function App() {
         ⭐ Letter to Stars
       </h1>
       <p className="text-sm text-gray-400">
-        Version 1.0.0
+        Version 1.0.1
       </p>
     </div>
   )
