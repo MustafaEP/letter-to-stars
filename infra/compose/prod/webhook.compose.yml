@@ -11,11 +11,9 @@ services:
       - "9000"
     networks:
       - edge
+    volumes:
+      - /opt/letter-to-stars:/opt/letter-to-stars:ro
 
 networks:
   edge:
     external: true
-
-    volumes:
-      - /opt/letter-to-stars:/opt/letter-to-stars:ro
-  
