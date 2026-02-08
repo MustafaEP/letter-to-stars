@@ -6,5 +6,6 @@ router = APIRouter()
 def health():
     return {
         "status": "ai-service ok",
-        "service": "letter-to-stars-ai"
+        "service": "letter-to-stars-ai",
+        "version": "1.0.0"
     }
