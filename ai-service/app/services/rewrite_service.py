@@ -1,6 +1,6 @@
 import json
 import re
-from app.core.gemini import model
+from app.core.gemini import get_model
 from app.schemas.rewrite import RewriteResponse, VocabularyItem
 
 PROMPT_TEMPLATE = """
@@ -33,7 +33,7 @@ def _normalize_words(text: str) -> set[str]:
 def rewrite_text(text: str, level: str) -> RewriteResponse:
     prompt = PROMPT_TEMPLATE.format(text=text, level=level)
 
-    result = model.generate_content(prompt)
+    result = get_model().generate_content(prompt)
     raw = result.text.strip()
 
     try:
