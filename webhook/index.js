@@ -20,6 +20,7 @@ const HOST = process.env.HOST || "0.0.0.0"; // host'ta çalışacak
 const SECRET = process.env.WEBHOOK_SECRET;  // ZORUNLU
 const DEPLOY_SCRIPT = process.env.DEPLOY_SCRIPT || "/opt/letter-to-stars/scripts/deploy.sh";
 const LOG_FILE = process.env.WEBHOOK_DEPLOY_LOG || "/opt/letter-to-stars/logs/webhook-deploy.log";
+const DEPLOY_BRANCH = process.env.DEPLOY_BRANCH || "main";
 
 if (!SECRET) {
   console.error("WEBHOOK_SECRET is missing. Set it in /opt/letter-to-stars/webhook/.env");
@@ -52,6 +53,14 @@ app.post("/deploy", (req, res) => {
   // only push
   if (event !== "push") {
     console.log("Ignored event", { event, delivery });
+    return res.status(200).send("ignored");
+  }
+
+  // only configured branch
+  const ref = req.body && req.body.ref;
+  const expectedRef = `refs/heads/${DEPLOY_BRANCH}`;
+  if (ref !== expectedRef) {
+    console.log("Ignored push to other ref", { ref, expectedRef, delivery });
     return res.status(200).send("ignored");
   }
 

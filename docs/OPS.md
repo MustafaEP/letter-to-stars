@@ -46,12 +46,15 @@ Diğer projelerin klasörlerine girilmez.
 4) Webhook servisi:
    - HMAC doğrular
    - doğru event mi kontrol eder (`push`)
+   - doğru branch mi kontrol eder (`DEPLOY_BRANCH`, default: `main`)
    - deploy script çalıştırır
 5) Deploy script:
    - repo update
    - docker compose build/up
    - health-check
    - log üretir
+
+> Webhook env örneği: `webhook/.env.example` (server’da `webhook/.env` olarak oluşturulur)
 
 ---
 

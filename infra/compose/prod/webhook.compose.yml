@@ -12,7 +12,10 @@ services:
     networks:
       - edge
     volumes:
-      - /opt/letter-to-stars:/opt/letter-to-stars:ro
+      # deploy.sh needs to git pull & write logs
+      - /opt/letter-to-stars:/opt/letter-to-stars:rw
+      # allow deploy.sh to run docker commands on host
+      - /var/run/docker.sock:/var/run/docker.sock
 
 networks:
   edge:
