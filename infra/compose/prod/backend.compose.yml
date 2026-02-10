@@ -1,5 +1,6 @@
 services:
   lettertostars-backend:
+    container_name: lettertostars-backend
     build:
       context: ../../../backend
     image: lettertostars-backend:latest

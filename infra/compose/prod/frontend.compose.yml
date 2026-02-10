@@ -1,5 +1,6 @@
 services:
   lettertostars-web:
+    container_name: lettertostars-web
     build:
       context: ../../../frontend
     image: lettertostars-web:latest

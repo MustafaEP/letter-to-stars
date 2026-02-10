@@ -1,11 +1,10 @@
 services:
   lettertostars-ai:
+    container_name: lettertostars-ai
     build:
       context: ../../../ai-service
     image: lettertostars-ai:latest
     restart: always
-    environment:
-      - APP_VERSION=${APP_VERSION:-dev}
     networks:
       - edge
 
