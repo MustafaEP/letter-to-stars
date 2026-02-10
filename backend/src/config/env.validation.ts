@@ -1,9 +1,42 @@
-import { z } from "zod";
+import { plainToInstance } from 'class-transformer';
+import { IsString, IsNotEmpty, validateSync } from 'class-validator';
 
-export const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  PORT: z.coerce.number().default(3000),
-  DATABASE_URL: z.string().min(1),
-});
+class EnvironmentVariables {
+  @IsString()
+  @IsNotEmpty()
+  JWT_SECRET: string;
 
-export type EnvVars = z.infer<typeof envSchema>;
+  @IsString()
+  @IsNotEmpty()
+  JWT_EXPIRES_IN: string;
+
+  @IsString()
+  @IsNotEmpty()
+  REFRESH_SECRET: string;
+
+  @IsString()
+  @IsNotEmpty()
+  REFRESH_EXPIRES_IN: string;
+
+  @IsString()
+  @IsNotEmpty()
+  DATABASE_URL: string;
+}
+
+export function validate(config: Record<string, unknown>) {
+  const validatedConfig = plainToInstance(
+    EnvironmentVariables,
+    config,
+    { enableImplicitConversion: true },
+  );
+
+  const errors = validateSync(validatedConfig, {
+    skipMissingProperties: false,
+  });
+
+  if (errors.length > 0) {
+    throw new Error(errors.toString());
+  }
+
+  return validatedConfig;
+}
