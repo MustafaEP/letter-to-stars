@@ -20,14 +20,60 @@ model User {
   id           String       @id @default(cuid())
   email        String       @unique
   name         String?
-  passwordHash String?      // google kullanıcılarında null olabilir
+  passwordHash String?
   provider     AuthProvider @default(LOCAL)
   providerId   String?      @unique
-
   role         UserRole     @default(USER)
+  
+  diaries      Diary[]      
+  refreshTokens RefreshToken[] 
 
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
-
+  
   @@index([provider, providerId])
 }
+
+model Diary {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Kullanıcı metni
+  originalText   String   @db.Text
+  
+  // AI çıktısı
+  rewrittenText  String   @db.Text
+  ieltsLevel     Int      // 6, 7, 8, 9
+  
+  // Kelimeler (JSON)
+  newWords       Json     // [{"english_word": "...", "turkish_meaning": "..."}]
+  
+  // Opsiyonel görsel
+  imageUrl       String?
+  
+  // Tarih
+  entryDate      DateTime @default(now()) @db.Date
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  // Bir günde bir entry
+  @@unique([userId, entryDate])
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+  @@index([token])
+}
+
+
