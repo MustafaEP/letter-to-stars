@@ -156,3 +156,5 @@ Bu proje ile:
 Bu proje kişisel / eğitim amaçlıdır.
 
 ---
+
+Auto Deploy
