@@ -5,6 +5,8 @@ services:
       context: ../../../backend
     image: lettertostars-backend:latest
     restart: always
+    env_file:
+      - ../../../backend/.env
     environment:
       - APP_VERSION=${APP_VERSION:-dev}
     networks:
