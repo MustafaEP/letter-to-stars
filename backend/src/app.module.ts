@@ -9,7 +9,8 @@ import { HealthModule } from './health/health.module';
 import { UsersModule } from './users/users.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { AuthModule } from './auth/auth.module';
-
+import { AiClientService } from './diary/ai-client.service';
+import { DiaryModule } from './diary/diary.module';
 
 @Module({
   imports: [
@@ -21,9 +22,13 @@ import { AuthModule } from './auth/auth.module';
     HealthModule,
     UsersModule,
     AuthModule,
+    DiaryModule,
   ],
   controllers: [AppController],
-  providers: [AppService, {
+  providers: [
+    AppService, 
+    AiClientService,
+    {
     provide: APP_GUARD,
     useClass: JwtAuthGuard,  // Tüm route'lar korumalı (default)
   }],
