@@ -1,0 +1,142 @@
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { AiClientService } from './ai-client.service';
+import { CreateDiaryDto } from './dto/create-diary.dto';
+import { DiaryResponseDto } from './dto/diary-response.dto';
+
+@Injectable()
+export class DiaryService {
+  constructor(
+    private prisma: PrismaService,
+    private aiClient: AiClientService,
+  ) {}
+
+  /**
+   * Yeni günlük oluştur + AI dönüşümü
+   */
+  async create(userId: string, dto: CreateDiaryDto): Promise<DiaryResponseDto> {
+    // 1. Bugün zaten entry var mı kontrol et
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const existingEntry = await this.prisma.diary.findUnique({
+      where: {
+        userId_entryDate: {
+          userId,
+          entryDate: today,
+        },
+      },
+    });
+
+    if (existingEntry) {
+      throw new ConflictException('Bugün için zaten bir günlük girdiniz');
+    }
+
+    // 2. AI servisine gönder
+    const aiResponse = await this.aiClient.rewriteText(
+      dto.originalText,
+      dto.ieltsLevel,
+    );
+
+    // 3. Database'e kaydet
+    const diary = await this.prisma.diary.create({
+      data: {
+        userId,
+        originalText: dto.originalText,
+        rewrittenText: aiResponse.rewritten_text,
+        ieltsLevel: dto.ieltsLevel,
+        newWords: aiResponse.new_words,
+        entryDate: today,
+      },
+    });
+
+    // 4. Response DTO'ya dönüştür
+    return {
+      id: diary.id,
+      originalText: diary.originalText,
+      rewrittenText: diary.rewrittenText,
+      ieltsLevel: diary.ieltsLevel,
+      newWords: diary.newWords as any,  // Prisma Json type
+      imageUrl: diary.imageUrl,
+      entryDate: diary.entryDate,
+      createdAt: diary.createdAt,
+    };
+  }
+
+  /**
+   * Kullanıcının tüm günlüklerini getir
+   */
+  async findAll(userId: string, page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
+
+    const [diaries, total] = await Promise.all([
+      this.prisma.diary.findMany({
+        where: { userId },
+        orderBy: { entryDate: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.diary.count({ where: { userId } }),
+    ]);
+
+    return {
+      data: diaries,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Belirli tarihteki günlüğü getir
+   */
+  async findByDate(userId: string, date: Date): Promise<DiaryResponseDto> {
+    const diary = await this.prisma.diary.findUnique({
+      where: {
+        userId_entryDate: {
+          userId,
+          entryDate: date,
+        },
+      },
+    });
+
+    if (!diary) {
+      throw new NotFoundException('Bu tarihte günlük bulunamadı');
+    }
+
+    return {
+      id: diary.id,
+      originalText: diary.originalText,
+      rewrittenText: diary.rewrittenText,
+      ieltsLevel: diary.ieltsLevel,
+      newWords: diary.newWords as any,
+      imageUrl: diary.imageUrl,
+      entryDate: diary.entryDate,
+      createdAt: diary.createdAt,
+    };
+  }
+
+  /**
+   * Günlüğü sil
+   */
+  async remove(userId: string, id: string): Promise<void> {
+    const diary = await this.prisma.diary.findUnique({
+      where: { id },
+    });
+
+    if (!diary) {
+      throw new NotFoundException('Günlük bulunamadı');
+    }
+
+    if (diary.userId !== userId) {
+      throw new NotFoundException('Bu günlüğü silme yetkiniz yok');
+    }
+
+    await this.prisma.diary.delete({
+      where: { id },
+    });
+  }
+}
