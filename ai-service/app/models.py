@@ -7,7 +7,7 @@ class RewriteRequest(BaseModel):
     user_text: str = Field(
         ..., # Required (zorunlu)
         min_length=10,
-        max_length=5000,
+        max_length=10000,
         description="Kullanıcının İngilizce günlük metni",
         example="Today I went to the park and saw many birds."
     )

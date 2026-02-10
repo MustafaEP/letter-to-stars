@@ -33,7 +33,7 @@ class GeminiService:
                 "temperature": 0.7,  # Yaratıcılık seviyesi
                 "top_p": 0.95,
                 "top_k": 40,
-                "max_output_tokens": 2048,
+                "max_output_tokens": 8192,
             }
         )
         
