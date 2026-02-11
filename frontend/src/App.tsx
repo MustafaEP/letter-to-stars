@@ -4,6 +4,7 @@ import Register from './pages/Register';
 import DiaryCreate from './pages/DiaryCreate';
 import DiaryDetail from './pages/DiaryDetail';
 import DiaryList from './pages/DiaryList';
+import Profile from './pages/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -36,6 +37,14 @@ function App() {
           element={
             <ProtectedRoute>
               <DiaryDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />
