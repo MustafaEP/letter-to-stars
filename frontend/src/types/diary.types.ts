@@ -28,3 +28,16 @@ export interface DiaryListResponse {
       totalPages: number;
     };
 }
+
+export interface DiaryStats {
+  total: number;
+  thisMonth: number;
+  currentStreak: number;
+  longestStreak: number;
+}
+
+export interface CalendarEntry {
+  id: string;
+  entryDate: string;
+  ieltsLevel: number;
+}
