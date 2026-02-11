@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { diaryApi } from '../api/diary.api';
 import { Sparkles, AlertCircle, Loader2 } from 'lucide-react';
 import Layout from '../components/layout/Layout';
 
-// Validation schema - z.coerce kullan
+// Validation schema 
 const diarySchema = z.object({
     originalText: z
         .string()
         .min(50, 'Günlük en az 50 karakter olmalıdır')
         .max(10000, 'Günlük en fazla 10000 karakter olabilir'),
-    ieltsLevel: z.coerce.number().min(6).max(9),  
+    ieltsLevel: z.number().min(6).max(9),
 });
 
 type DiaryFormData = z.infer<typeof diarySchema>;
@@ -31,15 +31,15 @@ export default function DiaryCreate() {
     } = useForm<DiaryFormData>({
         resolver: zodResolver(diarySchema),
         defaultValues: {
-        ieltsLevel: 7,
+            ieltsLevel: 7,
         },
     });
 
     const originalText = watch('originalText', '');
-    const ieltsLevel = watch('ieltsLevel');
+    const ieltsLevel = watch('ieltsLevel', 7);
     const charCount = originalText.length;
 
-    const onSubmit = async (data: DiaryFormData) => {
+    const onSubmit: SubmitHandler<DiaryFormData> = async (data) => {
         
         setError('');
         setIsLoading(true);
