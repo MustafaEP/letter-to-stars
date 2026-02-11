@@ -1,10 +1,11 @@
-import { useNavigate, Link } from 'react-router-dom';
-import { LogOut, BookOpen, List, Plus, User } from 'lucide-react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { LogOut, BookOpen, List, Plus, User, Calendar } from 'lucide-react';
 import { tokenUtils } from '../../utils/token';
 import { authApi } from '../../api/auth.api';
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
@@ -17,12 +18,14 @@ export default function Navbar() {
     }
   };
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/diary/list" className="flex items-center gap-2">
+          <Link to="/diary/calendar" className="flex items-center gap-2">
             <BookOpen className="w-6 h-6 text-primary-600" />
             <span className="text-xl font-bold text-gray-900">
               Yıldızlara Mektup
@@ -30,13 +33,29 @@ export default function Navbar() {
           </Link>
 
           {/* Navigation */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Link
+              to="/diary/calendar"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                isActive('/diary/calendar')
+                  ? 'bg-primary-100 text-primary-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <Calendar className="w-4 h-4" />
+              <span className="text-sm font-medium">Takvim</span>
+            </Link>
+
             <Link
               to="/diary/list"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                isActive('/diary/list')
+                  ? 'bg-primary-100 text-primary-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
             >
               <List className="w-4 h-4" />
-              <span className="text-sm font-medium">Günlüklerim</span>
+              <span className="text-sm font-medium">Liste</span>
             </Link>
 
             <Link
@@ -49,7 +68,11 @@ export default function Navbar() {
 
             <Link
               to="/profile"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                isActive('/profile')
+                  ? 'bg-primary-100 text-primary-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
             >
               <User className="w-4 h-4" />
               <span className="text-sm font-medium">Profil</span>
