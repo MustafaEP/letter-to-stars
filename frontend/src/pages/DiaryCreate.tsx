@@ -133,11 +133,11 @@ export default function DiaryCreate() {
                             `}
                             >
                             <input
-                                {...register('ieltsLevel')}
                                 type="radio"
                                 value={level}
                                 className="sr-only"
                                 disabled={isLoading}
+                                {...register('ieltsLevel', { valueAsNumber: true })}
                             />
                             <div className="text-center">
                                 <div className="text-2xl font-bold text-gray-900">{level}</div>
