@@ -10,7 +10,8 @@ import {
   ChevronRight,
   Plus,
   Loader2,
-  Star
+  Star,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -46,6 +47,8 @@ export default function DiaryList() {
       </Layout>
     );
   }
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3000';
 
   return (
     <Layout>
@@ -104,37 +107,57 @@ export default function DiaryList() {
                   }}
                   className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow cursor-pointer"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
-                        <Star className="w-6 h-6 text-primary-600 fill-primary-600" />
+                  <div className="flex gap-6">
+                    {/* Image Thumbnail */}
+                    {diary.imageUrl ? (
+                      <div className="w-32 h-32 flex-shrink-0">
+                        <img
+                          src={`${API_BASE_URL}${diary.imageUrl}`}
+                          alt="Diary"
+                          className="w-full h-full object-cover rounded-lg"
+                        />
                       </div>
-                      <div>
-                        <div className="font-semibold text-gray-900">
-                          {format(new Date(diary.entryDate), 'd MMMM yyyy', { locale: tr })}
+                    ) : (
+                      <div className="w-32 h-32 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <ImageIcon className="w-12 h-12 text-gray-300" />
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Star className="w-6 h-6 text-primary-600 fill-primary-600" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-900">
+                              {format(new Date(diary.entryDate), 'd MMMM yyyy', { locale: tr })}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {format(new Date(diary.createdAt), 'HH:mm', { locale: tr })}
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-600">
-                          {format(new Date(diary.createdAt), 'HH:mm', { locale: tr })}
+
+                        <div className="flex items-center gap-2 px-3 py-1 bg-primary-50 rounded-full">
+                          <TrendingUp className="w-4 h-4 text-primary-600" />
+                          <span className="text-sm font-medium text-primary-700">
+                            IELTS {diary.ieltsLevel}
+                          </span>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="flex items-center gap-2 px-3 py-1 bg-primary-50 rounded-full">
-                      <TrendingUp className="w-4 h-4 text-primary-600" />
-                      <span className="text-sm font-medium text-primary-700">
-                        IELTS {diary.ieltsLevel}
-                      </span>
-                    </div>
-                  </div>
+                      <p className="text-gray-700 line-clamp-2 mb-3">
+                        {diary.originalText}
+                      </p>
 
-                  <p className="text-gray-700 line-clamp-2 mb-3">
-                    {diary.originalText}
-                  </p>
-
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>{diary.newWords.length} yeni kelime</span>
+                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" />
+                          <span>{diary.newWords.length} yeni kelime</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
