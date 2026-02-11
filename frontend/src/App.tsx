@@ -4,6 +4,7 @@ import Register from './pages/Register';
 import DiaryCreate from './pages/DiaryCreate';
 import DiaryDetail from './pages/DiaryDetail';
 import DiaryList from './pages/DiaryList';
+import CalendarView from './pages/CalendarView';  // ← Yeni
 import Profile from './pages/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -33,6 +34,14 @@ function App() {
           }
         />
         <Route
+          path="/diary/calendar"  // ← Yeni
+          element={
+            <ProtectedRoute>
+              <CalendarView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/diary/:date"
           element={
             <ProtectedRoute>
@@ -50,7 +59,7 @@ function App() {
         />
 
         {/* Redirect */}
-        <Route path="/" element={<Navigate to="/diary/list" replace />} />
+        <Route path="/" element={<Navigate to="/diary/calendar" replace />} />
       </Routes>
     </BrowserRouter>
   );
