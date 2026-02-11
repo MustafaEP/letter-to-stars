@@ -26,4 +26,31 @@ export class UsersService {
             data,
         });
     }
+
+    // Profil güncelle
+    async updateProfile(
+        userId: string,
+        data: { name?: string; bio?: string; profilePicture?: string },
+    ): Promise<User> {
+        return this.prisma.user.update({
+        where: { id: userId },
+        data,
+        });
+    }
+
+    // Profil resmini güncelle
+    async updateProfilePicture(userId: string, pictureUrl: string): Promise<User> {
+        return this.prisma.user.update({
+        where: { id: userId },
+        data: { profilePicture: pictureUrl },
+        });
+    }
+
+    // Profil resmini sil 
+    async removeProfilePicture(userId: string): Promise<User> {
+        return this.prisma.user.update({
+        where: { id: userId },
+        data: { profilePicture: null },
+        });
+    }
 }
