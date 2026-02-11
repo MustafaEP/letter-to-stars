@@ -1,14 +1,50 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import DiaryCreate from './pages/DiaryCreate';
+import DiaryDetail from './pages/DiaryDetail';
+import DiaryList from './pages/DiaryList';
+import ProtectedRoute from './components/ProtectedRoute';
+
 function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
-      <h1 className="text-4xl font-bold">
-        ⭐ Letter to Stars
-      </h1>
-      <p className="text-sm text-gray-400">
-        Version 1.0.1
-      </p>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Protected Routes */}
+        <Route
+          path="/diary"
+          element={
+            <ProtectedRoute>
+              <DiaryCreate />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/diary/list"
+          element={
+            <ProtectedRoute>
+              <DiaryList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/diary/:date"
+          element={
+            <ProtectedRoute>
+              <DiaryDetail />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Redirect */}
+        <Route path="/" element={<Navigate to="/diary/list" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
