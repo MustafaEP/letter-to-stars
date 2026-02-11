@@ -59,4 +59,33 @@ export const diaryApi = {
     );
     return response.data;
   },
+
+
+  /**
+   * Günlüğe resim yükle
+   */
+  uploadImage: async (diaryId: string, file: File): Promise<Diary> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await apiClient.patch<Diary>(
+      `/diary/${diaryId}/image`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    return response.data;
+  },
+
+  /**
+   * Günlükteki resmi sil
+   */
+  removeImage: async (diaryId: string): Promise<Diary> => {
+    const response = await apiClient.delete<Diary>(`/diary/${diaryId}/image`);
+    return response.data;
+  },
 };
