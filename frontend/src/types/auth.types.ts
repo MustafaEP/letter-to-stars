@@ -16,7 +16,7 @@ export interface RegisterRequest {
     name?: string;
 }
   
-export interface LoginResponse {
+export interface AuthResponse {
     accessToken: string;
     user: User;
 }
