@@ -19,3 +19,7 @@ build/
 # logs
 logs/*.log
 
+# Uploads (keep structure, ignore files)
+frontend/uploads/**/*
+!frontend/uploads/.gitkeep
+!frontend/uploads/profile-pictures/.gitkeep
