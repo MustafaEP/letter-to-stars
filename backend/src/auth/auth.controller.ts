@@ -19,7 +19,7 @@ export class AuthController {
   @Post('register')
   async register(
     @Body() dto: RegisterDto,
-    @Req() request: Request,
+    @Req() request: Request, // Header'lara, IP'ye, cookie'ye erişmek için
     @Res({ passthrough: true }) response: Response,
   ) {
     const userAgent = request.headers['user-agent'];
@@ -71,32 +71,32 @@ export class AuthController {
    * Refresh token ile yeni access token al
    */
   @Public()
-@Post('refresh')
-@HttpCode(HttpStatus.OK)
-async refresh(
-  @Req() request: Request,
-  @Res({ passthrough: true }) response: Response,
-) {
-  console.log('🍪 All cookies:', request.cookies);
-  console.log('🍪 Refresh token:', request.cookies?.refreshToken);
-  
-  const refreshToken = request.cookies?.refreshToken;
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refresh(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    console.log('🍪 All cookies:', request.cookies);
+    console.log('🍪 Refresh token:', request.cookies?.refreshToken);
+    
+    const refreshToken = request.cookies?.refreshToken;
 
-  if (!refreshToken) {
-    throw new UnauthorizedException('Refresh token bulunamadı');
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token bulunamadı');
+    }
+
+    const userAgent = request.headers['user-agent'];
+    const ipAddress = request.ip;
+
+    const result = await this.authService.refreshTokens(
+      refreshToken,
+      userAgent,
+      ipAddress,
+    );
+
+    return { accessToken: result.accessToken };
   }
-
-  const userAgent = request.headers['user-agent'];
-  const ipAddress = request.ip;
-
-  const result = await this.authService.refreshTokens(
-    refreshToken,
-    userAgent,
-    ipAddress,
-  );
-
-  return { accessToken: result.accessToken };
-}
 
   /**
    * POST /auth/logout

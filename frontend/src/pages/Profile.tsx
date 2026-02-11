@@ -7,7 +7,7 @@ import Layout from '../components/layout/Layout';
 import { usersApi } from '../api/users.api';
 import { authApi } from '../api/auth.api';
 import { tokenUtils } from '../utils/token';
-import type { User, ChangePasswordRequest } from '../types/auth.types';
+import type { User } from '../types/auth.types';
 import {
   Camera,
   Loader2,

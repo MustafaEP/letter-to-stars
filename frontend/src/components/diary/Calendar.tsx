@@ -10,12 +10,12 @@ export default function Calendar() {
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [entries, setEntries] = useState<CalendarEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchCalendar = async () => {
       try {
-        setIsLoading(true);
+        // setIsLoading(true);
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth() + 1;
         const data = await diaryApi.getCalendar(year, month);
@@ -23,7 +23,7 @@ export default function Calendar() {
       } catch (err) {
         console.error('Takvim yüklenemedi:', err);
       } finally {
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     };
 

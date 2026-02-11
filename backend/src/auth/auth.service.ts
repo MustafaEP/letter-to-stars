@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
+// Internal Type: Uygulama içinde kullanmak için oluşturulan typedır.
 // Service içinde kullanmak için internal type
 interface AuthServiceResponse {
   accessToken: string;
@@ -20,7 +21,12 @@ interface AuthServiceResponse {
   };
 }
 
-@Injectable()
+/*
+* Dependency Injection (DI): bir sınıfın ihtiyacı olan bağımlılıkları
+* kendisi oluşturması yerine, dışarıdan hazı verilmesi yaklaşımıdır.
+*/
+
+@Injectable() // Bu sınıfın DI sistemi tarafından yönetileceğini belirtir.
 export class AuthService {
   constructor(
     private prisma: PrismaService,

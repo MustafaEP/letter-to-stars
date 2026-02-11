@@ -38,3 +38,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   exports: [AuthService],
 })
 export class AuthModule {}
+
+/*
+* Provider: Nest'in DI sistemine bu sınıfı/servisi ben sağlıyacağım
+* diye tanıttığımız şeydir. AuthService burada bir provider'dır.
+* 
+* Instance: DI sistemi tarafından oluşturulan gerçek nesnedir. 
+* AuthService sınıfından oluşturulan gerçek nesne instance'dır.
+*/
