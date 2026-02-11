@@ -3,6 +3,11 @@ export interface User {
     email: string;
     name: string | null;
     role: string;
+    profilePicture?: string | null;  
+    bio?: string | null;              
+    emailVerified?: boolean;          
+    lastLoginAt?: string;             
+    createdAt?: string;
 }
   
 export interface LoginRequest {
@@ -19,4 +24,14 @@ export interface RegisterRequest {
 export interface AuthResponse {
     accessToken: string;
     user: User;
+}
+
+export interface UpdateProfileRequest {
+  name?: string;
+  bio?: string;
+}
+
+export interface ChangePasswordRequest {
+  oldPassword: string;
+  newPassword: string;
 }
