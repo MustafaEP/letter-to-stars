@@ -74,4 +74,30 @@ export class DiaryController {
     ) {
         await this.diaryService.remove(user.id, id);
     }
+
+    /**
+     * GET /api/diary/stats
+     * Kullanıcı istatistikleri
+     */
+    @Get('stats')
+    async getStats(@CurrentUser() user: { id: string }) {
+    return this.diaryService.getStats(user.id);
+    }
+
+    /**
+     * GET /api/diary/calendar/:year/:month
+     * Aylık takvim verisi
+     */
+    @Get('calendar/:year/:month')
+    async getCalendar(
+    @CurrentUser() user: { id: string },
+    @Param('year') year: string,
+    @Param('month') month: string,
+    ) {
+    return this.diaryService.getByMonth(
+        user.id,
+        parseInt(year, 10),
+        parseInt(month, 10),
+    );
+    }
 }
