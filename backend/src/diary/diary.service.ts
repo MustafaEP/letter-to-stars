@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiClientService } from './ai-client.service';
 import { CreateDiaryDto } from './dto/create-diary.dto';
@@ -239,5 +239,73 @@ export class DiaryService {
     });
 
     return diaries;
+  }
+
+  /**
+   * Günlüğe resim ekle
+   */
+  async updateImage(userId: string, diaryId: string, imageUrl: string) {
+    // Günlük bu kullanıcıya ait mi kontrol et
+    const diary = await this.prisma.diary.findUnique({
+      where: { id: diaryId },
+    });
+
+    if (!diary) {
+      throw new NotFoundException('Günlük bulunamadı');
+    }
+
+    if (diary.userId !== userId) {
+      throw new ForbiddenException('Bu günlük size ait değil');
+    }
+
+    // Resmi güncelle
+    const updated = await this.prisma.diary.update({
+      where: { id: diaryId },
+      data: { imageUrl },
+    });
+
+    return this.mapToResponseDto(updated);
+  }
+
+  /**
+   * Günlükteki resmi sil
+   */
+  async removeImage(userId: string, diaryId: string) {
+    const diary = await this.prisma.diary.findUnique({
+      where: { id: diaryId },
+    });
+
+    if (!diary) {
+      throw new NotFoundException('Günlük bulunamadı');
+    }
+
+    if (diary.userId !== userId) {
+      throw new ForbiddenException('Bu günlük size ait değil');
+    }
+
+    const updated = await this.prisma.diary.update({
+      where: { id: diaryId },
+      data: { imageUrl: null },
+    });
+
+    return this.mapToResponseDto(updated);
+  }
+
+  /**
+   * Diary entity'sini response DTO'ya çevir
+   */
+  private mapToResponseDto(diary: any): DiaryResponseDto {
+    return {
+      id: diary.id,
+      originalText: diary.originalText,
+      rewrittenText: diary.rewrittenText,
+      ieltsLevel: diary.ieltsLevel,
+      newWords: Array.isArray(diary.newWords) 
+        ? diary.newWords 
+        : JSON.parse(JSON.stringify(diary.newWords)),
+      imageUrl: diary.imageUrl,
+      entryDate: diary.entryDate,
+      createdAt: diary.createdAt,
+    };
   }
 }
