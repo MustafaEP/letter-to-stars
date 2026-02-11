@@ -17,50 +17,28 @@ enum UserRole {
 }
 
 model User {
-  id           String       @id @default(cuid())
-  email        String       @unique
-  name         String?
-  passwordHash String?
-  provider     AuthProvider @default(LOCAL)
-  providerId   String?      @unique
-  role         UserRole     @default(USER)
+  id              String       @id @default(cuid())
+  email           String       @unique
+  name            String?
+  passwordHash    String?
+  provider        AuthProvider @default(LOCAL)
+  providerId      String?      @unique
+  role            UserRole     @default(USER)
   
-  diaries      Diary[]      
-  refreshTokens RefreshToken[] 
-
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  // Yeni alanlar
+  profilePicture  String?      // URL veya path
+  emailVerified   Boolean      @default(false)
+  bio             String?      @db.Text
+  lastLoginAt     DateTime?
+  
+  diaries         Diary[]
+  refreshTokens   RefreshToken[]
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
   
   @@index([provider, providerId])
-}
-
-model Diary {
-  id             String   @id @default(cuid())
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Kullanıcı metni
-  originalText   String   @db.Text
-  
-  // AI çıktısı
-  rewrittenText  String   @db.Text
-  ieltsLevel     Int      // 6, 7, 8, 9
-  
-  // Kelimeler (JSON)
-  newWords       Json     // [{"english_word": "...", "turkish_meaning": "..."}]
-  
-  // Opsiyonel görsel
-  imageUrl       String?
-  
-  // Tarih
-  entryDate      DateTime @default(now()) @db.Date
-  
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  
-  // Bir günde bir entry
-  @@unique([userId, entryDate])
-  @@index([userId])
+  @@index([email])
 }
 
 model RefreshToken {
@@ -69,11 +47,34 @@ model RefreshToken {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
+  // Yeni alanlar
+  userAgent String?  // Browser/device bilgisi
+  ipAddress String?  // IP tracking
+  
   expiresAt DateTime
   createdAt DateTime @default(now())
   
   @@index([userId])
   @@index([token])
+  @@index([expiresAt])
 }
 
-
+model Diary {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  originalText   String   @db.Text
+  rewrittenText  String   @db.Text
+  ieltsLevel     Int
+  newWords       Json
+  imageUrl       String?
+  
+  entryDate      DateTime @default(now()) @db.Date
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  @@unique([userId, entryDate])
+  @@index([userId])
+  @@index([entryDate])
+}
