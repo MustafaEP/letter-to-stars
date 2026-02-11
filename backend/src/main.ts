@@ -20,16 +20,19 @@ async function bootstrap() {
   // Cookie parser
   app.use(cookieParser.default());
 
-
-  // Static files (uploaded images)
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  // Static files
+  const uploadsPath = join(process.cwd(), 'uploads');
+  app.useStaticAssets(uploadsPath, {
     prefix: '/uploads/',
   });
 
+  console.log('📁 Static files serving from:', uploadsPath);
+  
   app.enableCors({
     origin: [
       'https://lettertostars.mustafaerhanportakal.com',
       'http://localhost:5173',
+      'http://localhost:5174',
     ],
     credentials: true,
   });
@@ -43,7 +46,7 @@ async function bootstrap() {
   
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
-  console.log('📁 Static files path:', join(__dirname, '..', 'uploads'));
+  console.log(`📸 Images available at http://localhost:${port}/uploads/profile-pictures/`);
   console.log(`Server is running on port ${port}`);
 }
 bootstrap();
