@@ -139,4 +139,105 @@ export class DiaryService {
       where: { id },
     });
   }
+
+  /**
+   * Kullanıcının günlük istatistiklerini getir
+   */
+  async getStats(userId: string) {
+    // Toplam günlük sayısı
+    const total = await this.prisma.diary.count({
+      where: { userId },
+    });
+
+    // Bu ayki günlük sayısı
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const thisMonth = await this.prisma.diary.count({
+      where: {
+        userId,
+        entryDate: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+      },
+    });
+
+    // Streak hesapla (ardışık günler)
+    const allDiaries = await this.prisma.diary.findMany({
+      where: { userId },
+      select: { entryDate: true },
+      orderBy: { entryDate: 'desc' },
+    });
+
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+    let previousDate: Date | null = null;
+
+    for (const diary of allDiaries) {
+      const entryDate = new Date(diary.entryDate);
+
+      if (!previousDate) {
+        // İlk gün
+        tempStreak = 1;
+        currentStreak = 1;
+      } else {
+        const daysDiff = Math.floor(
+          (previousDate.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        if (daysDiff === 1) {
+          // Ardışık gün
+          tempStreak++;
+          if (currentStreak > 0) currentStreak++;
+        } else {
+          // Kesinti
+          longestStreak = Math.max(longestStreak, tempStreak);
+          tempStreak = 1;
+          currentStreak = 0;
+        }
+      }
+
+      previousDate = entryDate;
+    }
+
+    longestStreak = Math.max(longestStreak, tempStreak);
+
+    return {
+      total,
+      thisMonth,
+      currentStreak,
+      longestStreak,
+    };
+  }
+
+  /**
+   * Belirli bir aydaki tüm günlükleri getir (takvim için)
+   */
+  async getByMonth(userId: string, year: number, month: number) {
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+
+    const diaries = await this.prisma.diary.findMany({
+      where: {
+        userId,
+        entryDate: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      select: {
+        id: true,
+        entryDate: true,
+        ieltsLevel: true,
+      },
+      orderBy: {
+        entryDate: 'asc',
+      },
+    });
+
+    return diaries;
+  }
 }
