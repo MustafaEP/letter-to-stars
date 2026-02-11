@@ -46,14 +46,18 @@ export class DiaryController {
      * GET /api/diary/:date
      * Belirli tarihteki günlüğü getir (YYYY-MM-DD)
      */
-    @Get(':date')
+    
+    @Get(':date')  
     async findByDate(
         @CurrentUser() user: { id: string },
         @Param('date') dateString: string,
     ) {
-        // YYYY-MM-DD string'ini Date'e çevir
-        const date = new Date(dateString);
-        date.setHours(0, 0, 0, 0);
+        // YYYY-MM-DD formatını parse et
+        const date = new Date(dateString + 'T00:00:00.000Z');
+        
+        if (isNaN(date.getTime())) {
+            throw new Error('Invalid date format. Use YYYY-MM-DD');
+        }
         
         return this.diaryService.findByDate(user.id, date);
     }
