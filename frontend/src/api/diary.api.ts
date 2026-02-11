@@ -3,6 +3,8 @@ import type {
   CreateDiaryRequest,
   Diary,
   DiaryListResponse,
+  DiaryStats,
+  CalendarEntry,
 } from '../types/diary.types';
 
 export const diaryApi = {
@@ -37,5 +39,24 @@ export const diaryApi = {
    */
   delete: async (id: string): Promise<void> => {
     await apiClient.delete(`/diary/${id}`);
+  },
+
+
+  /**
+   * İstatistikleri getir
+   */
+  getStats: async (): Promise<DiaryStats> => {
+    const response = await apiClient.get<DiaryStats>('/diary/stats');
+    return response.data;
+  },
+
+  /**
+   * Aylık takvim verisi
+   */
+  getCalendar: async (year: number, month: number): Promise<CalendarEntry[]> => {
+    const response = await apiClient.get<CalendarEntry[]>(
+      `/diary/calendar/${year}/${month}`
+    );
+    return response.data;
   },
 };
