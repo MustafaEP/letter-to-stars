@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { authApi } from '../api/auth.api';
 import { tokenUtils } from '../utils/token';
 import { AlertCircle } from 'lucide-react';
+import GoogleButton from '../components/auth/GoogleButton';
 
 // Validation schema
 const registerSchema = z.object({
@@ -16,7 +17,7 @@ const registerSchema = z.object({
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
-export default function Register() {  // ← İsim düzeltildi
+export default function Register() {
   const navigate = useNavigate();
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +41,7 @@ export default function Register() {  // ← İsim düzeltildi
       tokenUtils.set(response.accessToken);
       
       // Ana sayfaya yönlendir
-      navigate('/diary');
+      navigate('/diary/calendar');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Kayıt başarısız oldu');
     } finally {
@@ -59,6 +60,21 @@ export default function Register() {  // ← İsim düzeltildi
           <p className="text-gray-600">
             Yeni bir hesap oluştur ✨
           </p>
+        </div>
+
+        {/* Google Button */}
+        <div className="mb-6">
+          <GoogleButton text="Google ile Kayıt Ol" />
+        </div>
+
+        {/* Divider */}
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">veya</span>
+          </div>
         </div>
 
         {/* Error Alert */}
