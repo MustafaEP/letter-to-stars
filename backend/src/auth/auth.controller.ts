@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Res, Req, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Get, Res, Req, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import type { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
@@ -6,9 +6,8 @@ import { LoginDto } from './dto/login.dto';
 import { Public } from './decorators/public.decorator';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { UnauthorizedException } from '@nestjs/common';
-
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 
 
 @Controller('auth')
@@ -157,5 +156,48 @@ export class AuthController {
   @Get('me')
   async getMe(@CurrentUser() user: { id: string }) {
     return this.authService.getUserProfile(user.id);
+  }
+
+
+  
+  /**
+   * GET /auth/google
+   * Google OAuth başlat
+   */
+  @Public()
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuth() {
+    // Guard redirect yapar
+  }
+
+  /**
+   * GET /auth/google/callback
+   * Google OAuth callback
+   */
+  @Public()
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuthRedirect(
+    @Req() req: Request,
+    @Res() response: Response,
+  ) {
+    const googleUser = req.user as any;
+
+    // Auth service ile giriş yap
+    const result = await this.authService.googleLogin(googleUser);
+
+    // Refresh token'ı cookie'ye kaydet
+    response.cookie('refreshToken', result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+
+    // Frontend'e redirect (access token query param'da)
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    response.redirect(`${frontendUrl}/auth/callback?token=${result.accessToken}`);
   }
 }
