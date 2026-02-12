@@ -14,6 +14,7 @@ async function bootstrap() {
       whitelist: true,        // DTO'da olmayan fieldları sil
       forbidNonWhitelisted: false,  // Extra field varsa hata ver
       transform: true,        // Plain object → DTO class'a dönüştür
+      disableErrorMessages: process.env.NODE_ENV === 'production',  // Production'da detaylı hata gösterme
     }),
   );
 
