@@ -39,9 +39,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 ENV WORKERS=2
 
 # Production-ready uvicorn config
-CMD ["uvicorn", "app.main:app", \
-     "--host", "0.0.0.0", \
-     "--port", "8001", \
-     "--workers", "${WORKERS}", \
-     "--log-level", "info", \
-     "--access-log"]
+CMD uvicorn app.main:app --host 0.0.0.0 --port 8001 --workers $WORKERS --log-level info --access-log
