@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { authApi } from '../api/auth.api';
 import { tokenUtils } from '../utils/token';
 import { AlertCircle } from 'lucide-react';
+import GoogleButton from '../components/auth/GoogleButton';
 
 // Validation schema
 const loginSchema = z.object({
@@ -39,7 +40,7 @@ export default function Login() {
       tokenUtils.set(response.accessToken);
       
       // Ana sayfaya yönlendir
-      navigate('/diary');
+      navigate('/diary/calendar');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Giriş başarısız oldu');
     } finally {
@@ -58,6 +59,21 @@ export default function Login() {
           <p className="text-gray-600">
             Günlüğünü yaz, İngilizceni geliştir ✨
           </p>
+        </div>
+
+        {/* Google Button */}
+        <div className="mb-6">
+          <GoogleButton text="Google ile Giriş Yap" />
+        </div>
+
+        {/* Divider */}
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">veya</span>
+          </div>
         </div>
 
         {/* Error Alert */}
