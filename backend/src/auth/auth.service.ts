@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
-
+import { AuthProvider } from '@prisma/client';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
@@ -59,7 +59,7 @@ export class AuthService {
     });
 
     // 4. Token'ları oluştur
-    const tokens = await this.generateTokens(user.id);
+    const tokens = await this.generateTokens({ sub: user.id });
 
     // 5. Refresh token'ı database'e kaydet
     await this.saveRefreshToken(user.id, tokens.refreshToken, userAgent, ipAddress);
@@ -93,7 +93,7 @@ export class AuthService {
     }
 
     // 3. Token'ları oluştur
-    const tokens = await this.generateTokens(user.id);
+    const tokens = await this.generateTokens({ sub: user.id });
 
     // 4. Last login güncelle
     await this.prisma.user.update({
@@ -117,26 +117,25 @@ export class AuthService {
   }
 
   /**
-   * Access + Refresh token üretir
+   * Access ve Refresh token oluştur
    */
-  private async generateTokens(userId: string): Promise<{
+  private generateTokens(payload: { sub: string }): {
     accessToken: string;
     refreshToken: string;
-  }> {
-    // Access Token
-    const accessPayload = { sub: userId };  // 'sub' = subject (JWT standardı)
-    const accessToken = this.jwtService.sign(accessPayload);
+  } {
+    // Access token
+    const accessToken = this.jwtService.sign(payload);
 
-    // Refresh Token (farklı secret ve süre)
-    const refreshPayload = { sub: userId };
-    const refreshToken = this.jwtService.sign(refreshPayload, {
+    // Refresh token 
+    const refreshToken = this.jwtService.sign(
+      payload,  
+      {
         secret: this.configService.get<string>('REFRESH_SECRET'),
-    });
+        expiresIn: this.configService.get<string>('REFRESH_EXPIRES_IN') as any,   
+      } as any, 
+    );
 
-    return {
-      accessToken,
-      refreshToken
-    };
+    return { accessToken, refreshToken };
   }
 
   /**
@@ -297,4 +296,79 @@ export class AuthService {
       createdAt: userProfile.createdAt,
     };
   }
+
+  
+  /**
+   * Google OAuth ile giriş/kayıt
+   */
+  async googleLogin(
+    googleUser: {
+      providerId: string;
+      email: string;
+      name: string;
+      profilePicture?: string;
+      provider: string;
+    },
+    userAgent?: string,
+    ipAddress?: string,
+  ) {
+    // 1. Google ID ile kullanıcı var mı?
+    let user = await this.usersService.findByProviderId(googleUser.providerId);
+
+    // 2. Email ile kullanıcı var mı?
+    if (!user) {
+      user = await this.usersService.findByEmail(googleUser.email);
+
+      // Email var ama local provider → Link accounts
+      if (user && user.provider === AuthProvider.LOCAL) {
+        user = await this.prisma.user.update({
+          where: { id: user.id },
+          data: {
+            providerId: googleUser.providerId,
+            provider: AuthProvider.GOOGLE,
+            profilePicture: googleUser.profilePicture || user.profilePicture,
+            emailVerified: true,
+          },
+        });
+      }
+    }
+
+    // 3. Hiç kullanıcı yok → Yeni kayıt
+    if (!user) {
+      user = await this.usersService.create({
+        email: googleUser.email,
+        name: googleUser.name,
+        provider: AuthProvider.GOOGLE,
+        providerId: googleUser.providerId,
+        profilePicture: googleUser.profilePicture,
+        emailVerified: true,
+      });
+    }
+
+    // 4. Token'ları oluştur
+    const tokens = await this.generateTokens({ sub: user.id });  
+
+    // 5. Refresh token'ı kaydet
+    await this.saveRefreshToken(user.id, tokens.refreshToken, userAgent, ipAddress);
+
+    // 6. Last login güncelle
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() },
+    });
+
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        profilePicture: user.profilePicture,
+      },
+    };
+  }
+
+  
 }
