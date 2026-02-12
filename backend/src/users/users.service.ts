@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User, Prisma } from '@prisma/client';
+import { User, AuthProvider } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -21,11 +21,11 @@ export class UsersService {
     }
 
     // Yeni kullanıcı oluştur
-    async create(data: Prisma.UserCreateInput): Promise<User> {
-        return this.prisma.user.create({
-            data,
-        });
-    }
+    // async create(data: Prisma.UserCreateInput): Promise<User> {
+    //     return this.prisma.user.create({
+    //         data,
+    //     });
+    // }
 
     // Profil güncelle
     async updateProfile(
@@ -51,6 +51,40 @@ export class UsersService {
         return this.prisma.user.update({
         where: { id: userId },
         data: { profilePicture: null },
+        });
+    }
+
+    /**
+     * Provider ID ile kullanıcı bul (Google ID)
+     */
+    async findByProviderId(providerId: string): Promise<User | null> {
+        return this.prisma.user.findUnique({
+        where: { providerId },
+        });
+    }
+    
+    /**
+     * Google OAuth için kullanıcı oluştur
+     */
+    async create(data: {
+        email: string;
+        name?: string;
+        provider?: AuthProvider;
+        providerId?: string;
+        profilePicture?: string;
+        emailVerified?: boolean;
+        passwordHash?: string;
+    }): Promise<User> {
+        return this.prisma.user.create({
+        data: {
+            email: data.email,
+            name: data.name,
+            provider: data.provider || AuthProvider.LOCAL,
+            providerId: data.providerId,
+            profilePicture: data.profilePicture,
+            emailVerified: data.emailVerified || false,
+            passwordHash: data.passwordHash,
+        },
         });
     }
 }
