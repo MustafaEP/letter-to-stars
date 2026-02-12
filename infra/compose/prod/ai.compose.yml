@@ -7,6 +7,14 @@ services:
     restart: always
     networks:
       - edge
+    env_file:
+      - ../../../ai-service/.env
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8001/health')"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
 
 networks:
   edge:
