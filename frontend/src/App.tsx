@@ -7,6 +7,7 @@ import DiaryList from './pages/DiaryList';
 import CalendarView from './pages/CalendarView';  // ← Yeni
 import Profile from './pages/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
+import AuthCallback from './pages/AuthCallback';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />  {/* ← Yeni */}
 
         {/* Protected Routes */}
         <Route
