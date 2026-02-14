@@ -4,14 +4,22 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { authApi } from '../api/auth.api';
+import toast from 'react-hot-toast';  
 import { tokenUtils } from '../utils/token';
 import { AlertCircle } from 'lucide-react';
 import GoogleButton from '../components/auth/GoogleButton';
 
 // Validation schema
 const loginSchema = z.object({
-  email: z.string().email('Geçerli bir email adresi giriniz'),
-  password: z.string().min(8, 'Şifre en az 8 karakter olmalıdır'),
+  email: z
+    .string()
+    .min(1, 'Email adresi gereklidir')
+    .email('Geçerli bir email adresi giriniz'),
+  password: z
+    .string()
+    .min(1, 'Şifre gereklidir')
+    .min(8, 'Şifre en az 8 karakter olmalıdır')
+    .max(64, 'Şifre en fazla 64 karakter olabilir'),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -33,16 +41,24 @@ export default function Login() {
     setError('');
     setIsLoading(true);
 
+    
     try {
       const response = await authApi.login(data);
-      
-      // Token'ı kaydet
       tokenUtils.set(response.accessToken);
       
-      // Ana sayfaya yönlendir
-      navigate('/diary/calendar');
+      // Success toast
+      toast.success('Giriş başarılı! Yönlendiriliyorsunuz...', {
+        duration: 2000,
+      });
+      
+      // Delay navigation for toast visibility
+      setTimeout(() => {
+        navigate('/diary/calendar');
+      }, 500);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Giriş başarısız oldu');
+      const message = err.response?.data?.message || 'Giriş başarısız oldu';
+      setError(message);
+      toast.error(message);  
     } finally {
       setIsLoading(false);
     }

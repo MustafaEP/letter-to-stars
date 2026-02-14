@@ -3,17 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import toast from 'react-hot-toast';
 import { diaryApi } from '../api/diary.api';
 import { Sparkles, AlertCircle, Loader2, Image as ImageIcon, X } from 'lucide-react';
 import Layout from '../components/layout/Layout';
 
 // Validation schema 
 const diarySchema = z.object({
-    originalText: z
-        .string()
-        .min(50, 'Günlük en az 50 karakter olmalıdır')
-        .max(10000, 'Günlük en fazla 10000 karakter olabilir'),
-    ieltsLevel: z.number().min(6).max(9),
+  originalText: z
+    .string()
+    .min(1, 'Günlük metni gereklidir')
+    .min(50, 'Günlük en az 50 karakter olmalıdır')
+    .max(10000, 'Günlük en fazla 10.000 karakter olabilir')
+    .refine(
+      (text) => text.trim().split(/\s+/).length >= 10,
+      'Günlük en az 10 kelime içermelidir'
+    ),
+  ieltsLevel: z
+    .number()
+    .min(6, 'IELTS seviyesi en az 6 olmalıdır')
+    .max(9, 'IELTS seviyesi en fazla 9 olabilir'),
 });
 
 type DiaryFormData = z.infer<typeof diarySchema>;
@@ -26,16 +35,18 @@ export default function DiaryCreate() {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
   
     const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        watch,
+      register,
+      handleSubmit,
+      formState: { errors },
+      watch,
+      setValue,
     } = useForm<DiaryFormData>({
-        resolver: zodResolver(diarySchema),
-        defaultValues: {
-            ieltsLevel: 7,
-        },
+      resolver: zodResolver(diarySchema),
+      defaultValues: {
+        ieltsLevel: 7,
+      },
     });
+    
 
     const originalText = watch('originalText', '');
     // const ieltsLevel = watch('ieltsLevel', 7);
@@ -43,33 +54,34 @@ export default function DiaryCreate() {
 
     
   const onSubmit = async (data: DiaryFormData) => {
-    console.log('🚀 onSubmit çağrıldı!');
     
     setError('');
     setIsLoading(true);
-
+ 
     try {
-      // 1. Önce günlüğü oluştur
+      // 1. Günlük oluştur
       const result = await diaryApi.create(data);
-      console.log('✅ Günlük oluşturuldu:', result);
-
-      // 2. Eğer resim varsa yükle
+      
+      // 2. Resim varsa yükle
       if (selectedImage) {
-        console.log('📸 Resim yükleniyor...');
         await diaryApi.uploadImage(result.id, selectedImage);
-        console.log('✅ Resim yüklendi');
+        toast.success('Günlük ve resim kaydedildi! ✓');
+      } else {
+        toast.success('Günlük kaydedildi! ✓');
       }
 
       // 3. Detay sayfasına git
       const dateString = new Date(result.entryDate).toISOString().split('T')[0];
       navigate(`/diary/${dateString}`);
     } catch (err: any) {
-      console.error('❌ Hata:', err);
-      
       if (err.response?.status === 409) {
-        setError('Bugün için zaten bir günlük girdiniz');
+        const message = 'Bugün için zaten bir günlük girdiniz';
+        setError(message);
+        toast.error(message);
       } else {
-        setError(err.response?.data?.message || 'Bir hata oluştu');
+        const message = err.response?.data?.message || 'Bir hata oluştu';
+        setError(message);
+        toast.error(message);
       }
     } finally {
       setIsLoading(false);
@@ -81,15 +93,13 @@ export default function DiaryCreate() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Dosya boyutu kontrolü (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      setError('Dosya boyutu 10MB\'dan küçük olmalıdır');
+      toast.error('Dosya boyutu 10MB\'dan küçük olmalıdır');
       return;
     }
 
     setSelectedImage(file);
 
-    // Preview oluştur
     const reader = new FileReader();
     reader.onloadend = () => {
       setImagePreview(reader.result as string);
@@ -175,14 +185,14 @@ export default function DiaryCreate() {
                   `}
                 >
                   <input
-                    {...register('ieltsLevel', { 
-                      setValueAs: (v) => parseInt(v, 10) 
-                    })}
                     type="radio"
                     value={level}
+                    checked={watch('ieltsLevel') === level}
+                    onChange={() => setValue('ieltsLevel', level)}
                     className="sr-only"
                     disabled={isLoading}
                   />
+
                   <div className="text-center">
                     <div className="text-2xl font-bold text-gray-900">{level}</div>
                     <div className="text-xs text-gray-600 mt-1">

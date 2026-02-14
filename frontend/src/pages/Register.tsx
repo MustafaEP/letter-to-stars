@@ -4,15 +4,32 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { authApi } from '../api/auth.api';
+import toast from 'react-hot-toast';
 import { tokenUtils } from '../utils/token';
 import { AlertCircle } from 'lucide-react';
 import GoogleButton from '../components/auth/GoogleButton';
 
 // Validation schema
 const registerSchema = z.object({
-  email: z.string().email('Geçerli bir email adresi giriniz'),
-  password: z.string().min(8, 'Şifre en az 8 karakter olmalıdır'),
-  name: z.string().min(2, 'Ad en az 2 karakter olmalıdır').optional(),
+  name: z
+    .string()
+    .min(2, 'Ad en az 2 karakter olmalıdır')
+    .max(100, 'Ad en fazla 100 karakter olabilir')
+    .optional()
+    .or(z.literal('')),
+  email: z
+    .string()
+    .min(1, 'Email adresi gereklidir')
+    .email('Geçerli bir email adresi giriniz'),
+  password: z
+    .string()
+    .min(1, 'Şifre gereklidir')
+    .min(8, 'Şifre en az 8 karakter olmalıdır')
+    .max(64, 'Şifre en fazla 64 karakter olabilir')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      'Şifre en az bir büyük harf, bir küçük harf ve bir rakam içermelidir'
+    ),
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -36,14 +53,19 @@ export default function Register() {
 
     try {
       const response = await authApi.register(data);
-      
-      // Token'ı kaydet
       tokenUtils.set(response.accessToken);
       
-      // Ana sayfaya yönlendir
-      navigate('/diary/calendar');
+      toast.success('Hesabınız oluşturuldu! Hoş geldiniz 🎉', {
+        duration: 2000,
+      });
+      
+      setTimeout(() => {
+        navigate('/diary/calendar');
+      }, 500);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Kayıt başarısız oldu');
+      const message = err.response?.data?.message || 'Kayıt başarısız oldu';
+      setError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
