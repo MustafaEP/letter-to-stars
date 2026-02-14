@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { diaryApi } from '../api/diary.api';
 import type { Diary } from '../types/diary.types';
 import Layout from '../components/layout/Layout';
+import toast from 'react-hot-toast';
 import { 
   ArrowLeft, 
   Calendar, 
@@ -48,9 +49,8 @@ export default function DiaryDetail() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Dosya boyutu kontrolü (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      setError('Dosya boyutu 10MB\'dan küçük olmalıdır');
+      toast.error('Dosya boyutu 10MB\'dan küçük olmalıdır');
       return;
     }
 
@@ -60,14 +60,17 @@ export default function DiaryDetail() {
     try {
       const updated = await diaryApi.uploadImage(diary.id, file);
       setDiary(updated);
+      toast.success('Resim eklendi 📸');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Resim yüklenemedi');
+      const message = err.response?.data?.message || 'Resim yüklenemedi';
+      setError(message);
+      toast.error(message);
     } finally {
       setIsUploading(false);
     }
   };
 
-  // Resmi sil
+  // Resim sil
   const handleRemoveImage = async () => {
     if (!diary) return;
     if (!confirm('Resmi silmek istediğinizden emin misiniz?')) return;
@@ -76,8 +79,9 @@ export default function DiaryDetail() {
       setIsDeleting(true);
       const updated = await diaryApi.removeImage(diary.id);
       setDiary(updated);
+      toast.success('Resim silindi');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Resim silinemedi');
+      toast.error('Resim silinemedi');
     } finally {
       setIsDeleting(false);
     }

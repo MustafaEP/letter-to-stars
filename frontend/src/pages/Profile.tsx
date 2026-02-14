@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Layout from '../components/layout/Layout';
+import toast from 'react-hot-toast';
 import { usersApi } from '../api/users.api';
 import { authApi } from '../api/auth.api';
 import { tokenUtils } from '../utils/token';
@@ -85,9 +86,11 @@ export default function Profile() {
     try {
       const updated = await usersApi.updateProfile(data);
       setUser(updated);
-      setSuccess('Profil başarıyla güncellendi');
+      toast.success('Profil güncellendi ✓');  // ← Toast
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Profil güncellenemedi');
+      const message = err.response?.data?.message || 'Profil güncellenemedi';
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -98,16 +101,17 @@ export default function Profile() {
 
     try {
       await authApi.changePassword(data);
-      setSuccess('Şifre değiştirildi. Tekrar giriş yapın.');
+      toast.success('Şifre değiştirildi. Tekrar giriş yapılıyor...');
       resetPassword();
 
-      // 2 saniye sonra logout
       setTimeout(() => {
         tokenUtils.remove();
         navigate('/login');
       }, 2000);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Şifre değiştirilemedi');
+      const message = err.response?.data?.message || 'Şifre değiştirilemedi';
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -124,13 +128,15 @@ export default function Profile() {
 
     setIsUploading(true);
     setError('');
-
+    
     try {
       const updated = await usersApi.uploadProfilePicture(file);
       setUser(updated);
-      setSuccess('Profil resmi güncellendi');
+      toast.success('Profil resmi güncellendi 📸');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Resim yüklenemedi');
+      const message = err.response?.data?.message || 'Resim yüklenemedi';
+      setError(message);
+      toast.error(message);
     } finally {
       setIsUploading(false);
     }
@@ -143,9 +149,9 @@ export default function Profile() {
     try {
       const updated = await usersApi.removeProfilePicture();
       setUser(updated);
-      setSuccess('Profil resmi silindi');
+      toast.success('Profil resmi silindi');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Resim silinemedi');
+      toast.error('Resim silinemedi');
     }
   };
 
@@ -156,9 +162,10 @@ export default function Profile() {
     try {
       await authApi.logoutAll();
       tokenUtils.remove();
+      toast.success('Tüm cihazlardan çıkış yapıldı');
       navigate('/login');
     } catch (err) {
-      setError('Çıkış yapılamadı');
+      toast.error('Çıkış yapılamadı');
     }
   };
 
