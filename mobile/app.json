@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Yıldızlara Mektup",
+    "slug": "yildizlara-mektup",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yildizlaramektup.app"
+    },
+    "android": {
+      "package": "com.yildizlaramektup.app",
+      "permissions": []
+    }
+  }
+}
