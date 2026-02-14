@@ -1,69 +1,103 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';  
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AuthCallback from './pages/AuthCallback';
 import DiaryCreate from './pages/DiaryCreate';
 import DiaryDetail from './pages/DiaryDetail';
 import DiaryList from './pages/DiaryList';
-import CalendarView from './pages/CalendarView';  // ← Yeni
+import CalendarView from './pages/CalendarView';
 import Profile from './pages/Profile';
+import NotFound from './pages/NotFound';  
 import ProtectedRoute from './components/ProtectedRoute';
-import AuthCallback from './pages/AuthCallback';
+import ErrorBoundary from './components/ErrorBoundary';  
+import { useOnlineStatus } from './hooks/useOnlineStatus';
+import OfflineIndicator from './components/OfflineIndicator';
 
 function App() {
+  useOnlineStatus();  
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />  {/* ← Yeni */}
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#fff',
+              color: '#363636',
+            },
+            success: {
+              iconTheme: {
+                primary: '#10b981',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
+        <OfflineIndicator />
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
 
-        {/* Protected Routes */}
-        <Route
-          path="/diary"
-          element={
-            <ProtectedRoute>
-              <DiaryCreate />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/diary/list"
-          element={
-            <ProtectedRoute>
-              <DiaryList />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/diary/calendar"  // ← Yeni
-          element={
-            <ProtectedRoute>
-              <CalendarView />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/diary/:date"
-          element={
-            <ProtectedRoute>
-              <DiaryDetail />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
+          {/* Protected Routes */}
+          <Route
+            path="/diary"
+            element={
+              <ProtectedRoute>
+                <DiaryCreate />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/diary/list"
+            element={
+              <ProtectedRoute>
+                <DiaryList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/diary/calendar"
+            element={
+              <ProtectedRoute>
+                <CalendarView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/diary/:date"
+            element={
+              <ProtectedRoute>
+                <DiaryDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Redirect */}
-        <Route path="/" element={<Navigate to="/diary/calendar" replace />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Redirect */}
+          <Route path="/" element={<Navigate to="/diary/calendar" replace />} />
+          
+          {/* 404 - Catch all */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 
