@@ -86,9 +86,7 @@ export class DiaryController {
   async findByDate(
     @CurrentUser() user: { id: string },
     @Param('date') dateString: string,
-  ) {
-    console.log('📅 Finding diary for date:', dateString);
-    
+  ) {    
     // YYYY-MM-DD formatını doğrula
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(dateString)) {
@@ -103,7 +101,6 @@ export class DiaryController {
         throw new Error('Invalid date');
       }
       
-      console.log('📅 Parsed date:', date);
       return this.diaryService.findByDate(user.id, date);
     } catch (error) {
       throw new BadRequestException('Geçersiz tarih');
