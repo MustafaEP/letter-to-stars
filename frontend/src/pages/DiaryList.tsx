@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { diaryApi } from '../api/diary.api';
 import type { DiaryListResponse } from '../types/diary.types';
 import Layout from '../components/layout/Layout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import { 
   Calendar, 
   TrendingUp, 
   ChevronLeft, 
   ChevronRight,
   Plus,
-  Loader2,
   Star,
   Image as ImageIcon,
 } from 'lucide-react';
@@ -37,12 +37,12 @@ export default function DiaryList() {
 
     fetchDiaries();
   }, [currentPage]);
-
+  
   if (isLoading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
+        <div className="max-w-6xl mx-auto">
+          <LoadingSkeleton />
         </div>
       </Layout>
     );
