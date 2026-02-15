@@ -1,5 +1,5 @@
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { LogOut, BookOpen, List, Plus, User, Calendar } from 'lucide-react';
+import { LogOut, List, Plus, User, Calendar, Sparkles } from 'lucide-react';
 import { tokenUtils } from '../../utils/token';
 import { authApi } from '../../api/auth.api';
 
@@ -21,14 +21,17 @@ export default function Navbar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
+    <nav className="navbar-glass sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/diary/calendar" className="flex items-center gap-2">
-            <BookOpen className="w-6 h-6 text-primary-600" />
-            <span className="text-xl font-bold text-gray-900">
-              Yıldızlara Mektup
+          <Link to="/diary/calendar" className="flex items-center gap-3 group">
+            <div className="relative">
+              <Sparkles className="w-7 h-7 text-cyan-400 animate-pulse-glow" />
+              <div className="absolute inset-0 blur-xl bg-cyan-400/30 animate-pulse"></div>
+            </div>
+            <span className="text-xl font-bold text-cosmic-gradient">
+              Letter to Stars
             </span>
           </Link>
 
@@ -36,10 +39,10 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             <Link
               to="/diary/calendar"
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
                 isActive('/diary/calendar')
-                  ? 'bg-primary-100 text-primary-700'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/30'
+                  : 'text-gray-300 hover:bg-white/10 hover:text-cyan-300'
               }`}
             >
               <Calendar className="w-4 h-4" />
@@ -48,10 +51,10 @@ export default function Navbar() {
 
             <Link
               to="/diary/list"
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
                 isActive('/diary/list')
-                  ? 'bg-primary-100 text-primary-700'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/30'
+                  : 'text-gray-300 hover:bg-white/10 hover:text-cyan-300'
               }`}
             >
               <List className="w-4 h-4" />
@@ -60,7 +63,7 @@ export default function Navbar() {
 
             <Link
               to="/diary"
-              className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-5 py-2 btn-primary"
             >
               <Plus className="w-4 h-4" />
               <span className="text-sm font-medium">Yeni Günlük</span>
@@ -68,10 +71,10 @@ export default function Navbar() {
 
             <Link
               to="/profile"
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
                 isActive('/profile')
-                  ? 'bg-primary-100 text-primary-700'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/30'
+                  : 'text-gray-300 hover:bg-white/10 hover:text-cyan-300'
               }`}
             >
               <User className="w-4 h-4" />
@@ -80,7 +83,7 @@ export default function Navbar() {
 
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:bg-red-500/10 hover:text-red-400 rounded-xl transition-all duration-300"
             >
               <LogOut className="w-4 h-4" />
               <span className="text-sm font-medium">Çıkış</span>
