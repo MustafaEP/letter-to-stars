@@ -8,6 +8,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import AppLogo from '../../components/common/AppLogo';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { diaryApi } from '../../api/diary.api';
@@ -55,7 +56,7 @@ export default function DiaryDetailScreen() {
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.centerContent}>
             <View style={styles.notFoundIconContainer}>
-              <Ionicons name="star" size={64} color={colors.primary[400]} />
+              <AppLogo size={64} />
             </View>
             <Text style={styles.notFoundText}>Günlük bulunamadı</Text>
           </View>

@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import AppLogo from '../../components/common/AppLogo';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { diaryApi } from '../../api/diary.api';
@@ -81,7 +82,7 @@ export default function DiaryListScreen() {
       <View style={styles.cardHeader}>
         <View style={styles.cardLeft}>
           <View style={styles.iconContainer}>
-            <Ionicons name="star" size={18} color={colors.primary[400]} />
+            <AppLogo size={18} />
           </View>
           <View style={styles.cardTitleContainer}>
             <Text style={styles.cardTitle}>
@@ -125,7 +126,7 @@ export default function DiaryListScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerIconContainer}>
-            <Ionicons name="star" size={40} color={colors.primary[400]} />
+            <AppLogo size={40} />
           </View>
           <Text style={styles.headerTitle}>
             Günlüklerim
@@ -153,7 +154,7 @@ export default function DiaryListScreen() {
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <View style={styles.emptyIconContainer}>
-                <Ionicons name="star-outline" size={64} color={colors.primary[400]} />
+                <AppLogo size={64} />
               </View>
               <Text style={styles.emptyText}>
                 Henüz günlük yazmadın

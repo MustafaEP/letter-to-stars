@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import AppLogo from '../../components/common/AppLogo';
 import { useAuth } from '../../contexts/AuthContext';
 import Starfield from '../../components/common/Starfield';
 import CustomAlert from '../../components/common/CustomAlert';
@@ -62,7 +63,7 @@ export default function ProfileScreen() {
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerRow}>
-              <Ionicons name="star" size={24} color={colors.primary[400]} />
+              <AppLogo size={24} />
               <Text style={styles.headerTitle}>Profil</Text>
             </View>
           </View>

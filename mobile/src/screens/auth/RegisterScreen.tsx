@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
+import AppLogo from '../../components/common/AppLogo';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { useAuth } from '../../contexts/AuthContext';
 import Input from '../../components/common/Input';
@@ -95,7 +95,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
               {/* Header */}
               <View style={styles.header}>
                 <View style={styles.headerIconContainer}>
-                  <Ionicons name="star" size={56} color={colors.primary[400]} />
+                  <AppLogo size={56} />
                 </View>
                 <Text style={styles.title}>Hesap Oluştur</Text>
                 <Text style={styles.subtitle}>Yıldızlara ulaşmaya hazır mısın? ✨</Text>

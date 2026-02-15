@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import Starfield from './Starfield';
+import AppLogo from './AppLogo';
 import { colors } from '../../styles/globalStyles';
 
 export default function LoadingSpinner() {
@@ -10,7 +10,7 @@ export default function LoadingSpinner() {
       <Starfield count={60} />
       <View style={styles.content}>
         <View style={styles.iconContainer}>
-          <Ionicons name="star" size={64} color={colors.primary[400]} />
+          <AppLogo size={64} />
         </View>
         <ActivityIndicator size="large" color={colors.primary[400]} />
         <Text style={styles.text}>Yıldızlara bağlanıyor...</Text>

@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import AppLogo from '../../components/common/AppLogo';
 import { diaryApi } from '../../api/diary.api';
 import { DiaryStats } from '../../types/diary.types';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -63,7 +64,7 @@ export default function CalendarScreen() {
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerIconContainer}>
-              <Ionicons name="star" size={40} color={colors.primary[400]} />
+              <AppLogo size={40} />
             </View>
             <Text style={styles.title}>Yıldız Haritası</Text>
             <Text style={styles.subtitle}>
@@ -78,7 +79,7 @@ export default function CalendarScreen() {
                 {/* Toplam */}
                 <View style={[styles.statCard, styles.statCardYellow]}>
                   <View style={styles.statIconContainer}>
-                    <Ionicons name="star" size={28} color={colors.primary[400]} />
+                    <AppLogo size={28} />
                   </View>
                   <Text style={styles.statValue}>{stats.total}</Text>
                   <Text style={styles.statLabel}>Toplam Günlük</Text>
