@@ -5,7 +5,6 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
-  Alert,
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,26 +17,9 @@ import { diaryApi } from '../../api/diary.api';
 import { Diary } from '../../types/diary.types';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-
-// Colors nesnesini styles ile birlikte kullanabilmek için tanımladık.
-const colors = {
-  gray: {
-    50: '#f9fafb',
-    200: '#e5e7eb',
-    400: '#9ca3af',
-    500: '#6b7280',
-    600: '#4b5563',
-    700: '#374151',
-    900: '#111827',
-  },
-  white: '#fff',
-  black: '#000',
-  primary: {
-    50: '#e0f2fe',
-    100: '#bae6fd',
-    700: '#0284c7',
-  },
-};
+import Starfield from '../../components/common/Starfield';
+import CustomAlert from '../../components/common/CustomAlert';
+import { colors } from '../../styles/globalStyles';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -48,6 +30,9 @@ export default function DiaryListScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  
+  // Alert state
+  const [alertVisible, setAlertVisible] = useState(false);
 
   useEffect(() => {
     fetchDiaries();
@@ -64,7 +49,7 @@ export default function DiaryListScreen() {
       setHasMore(response.meta.page < response.meta.totalPages);
       setPage(pageNum);
     } catch (error) {
-      Alert.alert('Hata', 'Günlükler yüklenemedi');
+      setAlertVisible(true);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -91,13 +76,14 @@ export default function DiaryListScreen() {
     <TouchableOpacity
       style={styles.diaryCard}
       onPress={() => handleDiaryPress(item)}
+      activeOpacity={0.8}
     >
       <View style={styles.cardHeader}>
         <View style={styles.cardLeft}>
           <View style={styles.iconContainer}>
-            <Ionicons name="star" size={20} color={colors.primary[700]} />
+            <Ionicons name="star" size={18} color={colors.primary[400]} />
           </View>
-          <View>
+          <View style={styles.cardTitleContainer}>
             <Text style={styles.cardTitle}>
               {format(new Date(item.entryDate), 'd MMMM yyyy', { locale: tr })}
             </Text>
@@ -113,12 +99,12 @@ export default function DiaryListScreen() {
         </View>
       </View>
 
-      <Text style={styles.cardText} numberOfLines={2}>
+      <Text style={styles.cardText} numberOfLines={3}>
         {item.originalText}
       </Text>
 
       <View style={styles.cardFooter}>
-        <Ionicons name="book-outline" size={16} color={colors.gray[600]} />
+        <Ionicons name="sparkles" size={14} color={colors.primary[400]} />
         <Text style={styles.footerText}>
           {item.newWords.length} yeni kelime
         </Text>
@@ -131,146 +117,192 @@ export default function DiaryListScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>
-          Günlüklerim 📖
-        </Text>
-        <Text style={styles.headerSubtitle}>
-          {diaries.length} günlük • {diaries.length} yıldız ⭐
-        </Text>
-      </View>
-
-      {/* List */}
-      <FlatList
-        data={diaries}
-        renderItem={renderDiary}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons name="document-text-outline" size={64} color={colors.gray[200]} />
-            <Text style={styles.emptyText}>
-              Henüz günlük yazmadın
-            </Text>
-            <Text style={styles.emptySubtext}>
-              Yeni sekmesinden ilk günlüğünü oluştur
-            </Text>
+    <View style={styles.container}>
+      {/* Starfield Background */}
+      <Starfield count={60} />
+      
+      <SafeAreaView style={styles.safeArea}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerIconContainer}>
+            <Ionicons name="star" size={40} color={colors.primary[400]} />
           </View>
-        }
+          <Text style={styles.headerTitle}>
+            Günlüklerim
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            {diaries.length} günlük • {diaries.length} yıldız
+          </Text>
+        </View>
+
+        {/* List */}
+        <FlatList
+          data={diaries}
+          renderItem={renderDiary}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingTop: 16, paddingBottom: 100 }}
+          refreshControl={
+            <RefreshControl 
+              refreshing={refreshing} 
+              onRefresh={onRefresh}
+              tintColor={colors.primary[400]}
+            />
+          }
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <View style={styles.emptyIconContainer}>
+                <Ionicons name="star-outline" size={64} color={colors.primary[400]} />
+              </View>
+              <Text style={styles.emptyText}>
+                Henüz günlük yazmadın
+              </Text>
+              <Text style={styles.emptySubtext}>
+                İlk günlüğünü yaz ve yıldızlar arasında yerini al!
+              </Text>
+            </View>
+          }
+        />
+      </SafeAreaView>
+
+      {/* Error Alert */}
+      <CustomAlert
+        visible={alertVisible}
+        title="Hata"
+        message="Günlükler yüklenemedi"
+        type="error"
+        buttons={[{ text: 'Tamam' }]}
+        onClose={() => setAlertVisible(false)}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.gray[50],
+    backgroundColor: colors.cosmic.dark,
+  },
+  safeArea: {
+    flex: 1,
   },
   header: {
-    paddingHorizontal: 16,
-    paddingTop: 24,
-    paddingBottom: 16,
-    backgroundColor: colors.white,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray[200],
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+  },
+  headerIconContainer: {
+    marginBottom: 8,
   },
   headerTitle: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: colors.gray[900],
+    color: colors.primary[400],
     marginBottom: 4,
+    textShadowColor: colors.primary[400],
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 15,
   },
   headerSubtitle: {
-    fontSize: 16,
-    color: colors.gray[600],
+    fontSize: 14,
+    color: colors.gray[300],
   },
   diaryCard: {
-    backgroundColor: colors.white,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     marginHorizontal: 16,
-    marginBottom: 16,
-    borderRadius: 12,
+    marginBottom: 12,
+    borderRadius: 16,
     padding: 16,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   cardHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     marginBottom: 12,
   },
   cardLeft: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    flex: 1,
+    marginRight: 8,
   },
   iconContainer: {
-    backgroundColor: colors.primary[100],
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
     padding: 8,
-    borderRadius: 8,
-    marginRight: 12,
+    borderRadius: 10,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(56, 189, 248, 0.3)',
+  },
+  cardTitleContainer: {
+    flex: 1,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: colors.gray[900],
+    color: colors.gray[100],
+    marginBottom: 2,
   },
   cardTime: {
-    fontSize: 14,
-    color: colors.gray[500],
-    marginTop: 2,
+    fontSize: 13,
+    color: colors.gray[400],
   },
   levelBadge: {
-    backgroundColor: colors.primary[50],
-    paddingHorizontal: 12,
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(56, 189, 248, 0.3)',
   },
   levelText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.primary[700],
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.primary[400],
   },
   cardText: {
-    fontSize: 14,
-    color: colors.gray[700],
-    marginBottom: 8,
-    lineHeight: 20,
+    fontSize: 13,
+    color: colors.gray[300],
+    marginBottom: 10,
+    lineHeight: 19,
   },
   cardFooter: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
   },
   footerText: {
-    fontSize: 14,
-    color: colors.gray[600],
-    marginLeft: 4,
+    fontSize: 13,
+    color: colors.gray[400],
+    marginLeft: 6,
   },
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 48,
+    paddingVertical: 64,
+    paddingHorizontal: 32,
+  },
+  emptyIconContainer: {
+    marginBottom: 16,
   },
   emptyText: {
-    fontSize: 16,
-    color: colors.gray[500],
-    marginTop: 16,
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.gray[200],
+    marginBottom: 8,
     textAlign: 'center',
   },
   emptySubtext: {
-    fontSize: 14,
+    fontSize: 15,
     color: colors.gray[400],
-    marginTop: 8,
     textAlign: 'center',
   },
 });

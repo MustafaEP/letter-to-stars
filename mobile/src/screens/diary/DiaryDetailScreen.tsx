@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ScrollView,
-  Alert,
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,6 +14,8 @@ import { diaryApi } from '../../api/diary.api';
 import { Diary } from '../../types/diary.types';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import Starfield from '../../components/common/Starfield';
+import CustomAlert from '../../components/common/CustomAlert';
 import { colors } from '../../styles/globalStyles';
 
 type DiaryDetailRouteProp = RouteProp<RootStackParamList, 'DiaryDetail'>;
@@ -24,6 +25,9 @@ export default function DiaryDetailScreen() {
   const { date } = route.params;
   const [diary, setDiary] = useState<Diary | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Alert state
+  const [alertVisible, setAlertVisible] = useState(false);
 
   useEffect(() => {
     fetchDiary();
@@ -34,7 +38,7 @@ export default function DiaryDetailScreen() {
       const data = await diaryApi.getByDate(date);
       setDiary(data);
     } catch (error) {
-      Alert.alert('Hata', 'Günlük yüklenemedi');
+      setAlertVisible(true);
     } finally {
       setLoading(false);
     }
@@ -46,22 +50,31 @@ export default function DiaryDetailScreen() {
 
   if (!diary) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.centerContent}>
-          <Text style={styles.notFoundText}>Günlük bulunamadı</Text>
-        </View>
-      </SafeAreaView>
+      <View style={styles.container}>
+        <Starfield count={60} />
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.centerContent}>
+            <View style={styles.notFoundIconContainer}>
+              <Ionicons name="star" size={64} color={colors.primary[400]} />
+            </View>
+            <Text style={styles.notFoundText}>Günlük bulunamadı</Text>
+          </View>
+        </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerRow}>
-            <View style={styles.headerLeft}>
-              <Ionicons name="calendar-outline" size={20} color={colors.gray[600]} />
+    <View style={styles.container}>
+      <Starfield count={60} />
+      
+      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+        {/* Header - Fixed */}
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerTitle}>Günlük Detay</Text>
+          <View style={styles.headerInfo}>
+            <View style={styles.dateContainer}>
+              <Ionicons name="calendar-outline" size={16} color={colors.primary[400]} />
               <Text style={styles.dateText}>
                 {format(new Date(diary.entryDate), 'd MMMM yyyy', { locale: tr })}
               </Text>
@@ -72,52 +85,70 @@ export default function DiaryDetailScreen() {
           </View>
         </View>
 
-        {/* Content */}
-        <View style={styles.content}>
-          {/* Original Text */}
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Ionicons name="create-outline" size={20} color={colors.gray[600]} />
-              <Text style={styles.cardTitle}>Senin Yazdığın</Text>
-            </View>
-            <Text style={styles.cardText}>{diary.originalText}</Text>
-          </View>
-
-          {/* AI Rewritten */}
-          <View style={[styles.card, styles.aiCard]}>
-            <View style={styles.cardHeader}>
-              <Ionicons name="sparkles-outline" size={20} color={colors.primary[600]} />
-              <Text style={styles.cardTitle}>AI Dönüşümü (IELTS {diary.ieltsLevel})</Text>
-            </View>
-            <Text style={styles.aiText}>{diary.rewrittenText}</Text>
-          </View>
-
-          {/* New Words */}
-          {diary.newWords.length > 0 && (
+        <ScrollView style={styles.scrollView}>
+          {/* Content */}
+          <View style={styles.content}>
+            {/* Original Text */}
             <View style={styles.card}>
-              <Text style={styles.wordsTitle}>
-                Yeni Kelimeler 📚 ({diary.newWords.length})
-              </Text>
-              <View style={styles.wordsContainer}>
-                {diary.newWords.map((word, index) => (
-                  <View key={index} style={styles.wordCard}>
-                    <Text style={styles.wordEnglish}>{word.english_word}</Text>
-                    <Text style={styles.wordTurkish}>{word.turkish_meaning}</Text>
-                  </View>
-                ))}
+              <View style={styles.cardHeader}>
+                <Ionicons name="create-outline" size={20} color={colors.gray[400]} />
+                <Text style={styles.cardTitle}>Senin Yazdığın</Text>
               </View>
+              <Text style={styles.cardText}>{diary.originalText}</Text>
             </View>
-          )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+
+            {/* AI Rewritten */}
+            <View style={[styles.card, styles.aiCard]}>
+              <View style={styles.cardHeader}>
+                <Ionicons name="sparkles" size={20} color={colors.primary[400]} />
+                <Text style={styles.cardTitle}>AI Dönüşümü (IELTS {diary.ieltsLevel})</Text>
+              </View>
+              <Text style={styles.aiText}>{diary.rewrittenText}</Text>
+            </View>
+
+            {/* New Words */}
+            {diary.newWords.length > 0 && (
+              <View style={styles.card}>
+                <View style={styles.wordsHeader}>
+                  <Ionicons name="sparkles" size={20} color={colors.primary[400]} />
+                  <Text style={styles.wordsTitle}>
+                    Yeni Kelimeler ({diary.newWords.length})
+                  </Text>
+                </View>
+                <View style={styles.wordsContainer}>
+                  {diary.newWords.map((word, index) => (
+                    <View key={index} style={styles.wordCard}>
+                      <Text style={styles.wordEnglish}>{word.english_word}</Text>
+                      <Text style={styles.wordTurkish}>{word.turkish_meaning}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+
+      {/* Error Alert */}
+      <CustomAlert
+        visible={alertVisible}
+        title="Hata"
+        message="Günlük yüklenemedi"
+        type="error"
+        buttons={[{ text: 'Tamam' }]}
+        onClose={() => setAlertVisible(false)}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.gray[50],
+    backgroundColor: colors.cosmic.dark,
+  },
+  safeArea: {
+    flex: 1,
   },
   scrollView: {
     flex: 1,
@@ -127,60 +158,71 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  notFoundIconContainer: {
+    marginBottom: 16,
+  },
   notFoundText: {
-    fontSize: 16,
-    color: colors.gray[500],
+    fontSize: 18,
+    color: colors.gray[300],
   },
-  header: {
-    backgroundColor: colors.white,
-    paddingHorizontal: 24,
-    paddingVertical: 16,
+  headerContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 50,
+    paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray[200],
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(10, 14, 39, 0.95)',
   },
-  headerRow: {
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.gray[100],
+    marginBottom: 12,
+  },
+  headerInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  headerLeft: {
+  dateContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
+    marginRight: 12,
   },
   dateText: {
-    fontSize: 16,
-    color: colors.gray[600],
-    marginLeft: 8,
+    fontSize: 13,
+    color: colors.gray[300],
+    marginLeft: 6,
+    fontWeight: '500',
   },
   levelBadge: {
-    backgroundColor: colors.primary[50],
-    paddingHorizontal: 12,
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(56, 189, 248, 0.3)',
   },
   levelText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.primary[700],
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.primary[400],
   },
   content: {
-    padding: 24,
+    padding: 16,
   },
   card: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 16,
     padding: 16,
-    marginBottom: 16,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   aiCard: {
-    backgroundColor: colors.primary[50],
-    borderWidth: 1,
-    borderColor: colors.primary[200],
+    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+    borderColor: 'rgba(56, 189, 248, 0.3)',
   },
   cardHeader: {
     flexDirection: 'row',
@@ -188,46 +230,51 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: colors.gray[900],
+    color: colors.gray[100],
     marginLeft: 8,
   },
   cardText: {
     fontSize: 14,
-    color: colors.gray[700],
-    lineHeight: 22,
+    color: colors.gray[300],
+    lineHeight: 21,
   },
   aiText: {
     fontSize: 14,
-    color: colors.gray[800],
-    lineHeight: 22,
+    color: colors.gray[100],
+    lineHeight: 21,
     fontWeight: '500',
   },
-  wordsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.gray[900],
+  wordsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 12,
   },
+  wordsTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.gray[100],
+    marginLeft: 8,
+  },
   wordsContainer: {
-    gap: 12,
+    gap: 10,
   },
   wordCard: {
-    backgroundColor: colors.gray[50],
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     padding: 12,
-    borderRadius: 8,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: colors.gray[200],
+    borderColor: 'rgba(56, 189, 248, 0.2)',
   },
   wordEnglish: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.primary[700],
+    color: colors.primary[400],
     marginBottom: 4,
   },
   wordTurkish: {
-    fontSize: 14,
-    color: colors.gray[600],
+    fontSize: 13,
+    color: colors.gray[400],
   },
 });
