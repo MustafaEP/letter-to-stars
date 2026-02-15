@@ -6,15 +6,17 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
-  Alert,
   StyleSheet,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { useAuth } from '../../contexts/AuthContext';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import Starfield from '../../components/common/Starfield';
+import CustomAlert from '../../components/common/CustomAlert';
 import { colors } from '../../styles/globalStyles';
 
 type LoginScreenProps = {
@@ -27,6 +29,10 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  
+  // Alert states
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -54,121 +60,147 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     try {
       await login({ email, password });
     } catch (error: any) {
-      Alert.alert(
-        'Giriş Başarısız',
-        error.response?.data?.message || 'Bir hata oluştu'
-      );
+      setAlertMessage(error.response?.data?.message || 'Bir hata oluştu');
+      setAlertVisible(true);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <LinearGradient colors={['#f0f9ff', '#e0f2fe']} style={styles.gradient}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
+    <View style={styles.container}>
+      {/* Starfield Background */}
+      <Starfield count={80} />
+
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardView}
         >
-          <View style={styles.content}>
-            {/* Header */}
-            <View style={styles.header}>
-              <Text style={styles.title}>Yıldızlara Mektup</Text>
-              <Text style={styles.subtitle}>
-                Günlüğünü yaz, İngilizceni geliştir ✨
-              </Text>
-            </View>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.content}>
+              {/* Header */}
+              <View style={styles.header}>
+                <View style={styles.headerIconContainer}>
+                  <Ionicons name="star" size={56} color={colors.primary[400]} />
+                </View>
+                <Text style={styles.title}>Letter to Stars</Text>
+                <Text style={styles.subtitle}>
+                  Günlüğünü yaz, yıldızlara ulaş ✨
+                </Text>
+              </View>
 
-            {/* Form */}
-            <View style={styles.formContainer}>
-              <Input
-                label="Email"
-                value={email}
-                onChangeText={setEmail}
-                placeholder="ornek@email.com"
-                error={errors.email}
-              />
+              {/* Form */}
+              <View style={styles.formContainer}>
+                <Input
+                  label="Email"
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="ornek@email.com"
+                  error={errors.email}
+                />
 
-              <Input
-                label="Şifre"
-                value={password}
-                onChangeText={setPassword}
-                placeholder="••••••••"
-                secureTextEntry
-                error={errors.password}
-              />
+                <Input
+                  label="Şifre"
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="••••••••"
+                  secureTextEntry
+                  error={errors.password}
+                />
 
-              <Button title="Giriş Yap" onPress={handleLogin} loading={loading} />
+                <Button title="Giriş Yap" onPress={handleLogin} loading={loading} />
 
-              {/* Register Link */}
-              <View style={styles.footer}>
-                <Text style={styles.footerText}>Hesabın yok mu? </Text>
-                <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                  <Text style={styles.link}>Kayıt Ol</Text>
-                </TouchableOpacity>
+                {/* Register Link */}
+                <View style={styles.footer}>
+                  <Text style={styles.footerText}>Hesabın yok mu? </Text>
+                  <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                    <Text style={styles.link}>Kayıt Ol</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </LinearGradient>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+
+      {/* Error Alert */}
+      <CustomAlert
+        visible={alertVisible}
+        title="Giriş Başarısız"
+        message={alertMessage}
+        type="error"
+        buttons={[{ text: 'Tamam' }]}
+        onClose={() => setAlertVisible(false)}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  gradient: {
+  container: {
+    flex: 1,
+    backgroundColor: colors.cosmic.dark,
+  },
+  safeArea: {
     flex: 1,
   },
-  container: {
+  keyboardView: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
+    paddingHorizontal: 20,
   },
   content: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingVertical: 40,
   },
   header: {
-    marginBottom: 32,
+    marginBottom: 40,
+    alignItems: 'center',
+  },
+  headerIconContainer: {
+    marginBottom: 16,
   },
   title: {
-    fontSize: 30,
+    fontSize: 34,
     fontWeight: 'bold',
-    color: colors.gray[900],
+    color: colors.primary[400],
     textAlign: 'center',
     marginBottom: 8,
+    textShadowColor: colors.primary[400],
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 20,
   },
   subtitle: {
-    fontSize: 16,
-    color: colors.gray[600],
+    fontSize: 15,
+    color: colors.gray[300],
     textAlign: 'center',
   },
   formContainer: {
-    backgroundColor: colors.white,
-    borderRadius: 16,
-    padding: 24,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 24,
+    marginTop: 20,
   },
   footerText: {
-    color: colors.gray[600],
+    color: colors.gray[400],
     fontSize: 14,
   },
   link: {
-    color: colors.primary[600],
+    color: colors.primary[400],
     fontWeight: '600',
     fontSize: 14,
   },
