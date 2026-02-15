@@ -1,11 +1,20 @@
 import React from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import Starfield from './Starfield';
 import { colors } from '../../styles/globalStyles';
 
 export default function LoadingSpinner() {
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color={colors.primary[600]} />
+      <Starfield count={60} />
+      <View style={styles.content}>
+        <View style={styles.iconContainer}>
+          <Ionicons name="star" size={64} color={colors.primary[400]} />
+        </View>
+        <ActivityIndicator size="large" color={colors.primary[400]} />
+        <Text style={styles.text}>Yıldızlara bağlanıyor...</Text>
+      </View>
     </View>
   );
 }
@@ -13,8 +22,20 @@ export default function LoadingSpinner() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.cosmic.dark,
+  },
+  content: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.white,
+  },
+  iconContainer: {
+    marginBottom: 24,
+  },
+  text: {
+    marginTop: 16,
+    fontSize: 16,
+    color: colors.gray[300],
+    fontWeight: '500',
   },
 });

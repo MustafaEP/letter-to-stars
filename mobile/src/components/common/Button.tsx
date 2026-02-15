@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../styles/globalStyles';
 
 interface ButtonProps {
@@ -19,11 +20,35 @@ export default function Button({
 }: ButtonProps) {
   const isPrimary = variant === 'primary';
 
+  if (isPrimary) {
+    return (
+      <TouchableOpacity
+        style={[styles.button, (disabled || loading) && styles.disabledButton]}
+        onPress={onPress}
+        disabled={disabled || loading}
+        activeOpacity={0.8}
+      >
+        <LinearGradient
+          colors={['#38bdf8', '#0284c7']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.gradient}
+        >
+          {loading ? (
+            <ActivityIndicator color={colors.white} />
+          ) : (
+            <Text style={styles.primaryText}>{title}</Text>
+          )}
+        </LinearGradient>
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <TouchableOpacity
       style={[
         styles.button,
-        isPrimary ? styles.primaryButton : styles.secondaryButton,
+        styles.secondaryButton,
         (disabled || loading) && styles.disabledButton,
       ]}
       onPress={onPress}
@@ -31,11 +56,9 @@ export default function Button({
       activeOpacity={0.8}
     >
       {loading ? (
-        <ActivityIndicator color={isPrimary ? colors.white : colors.black} />
+        <ActivityIndicator color={colors.gray[100]} />
       ) : (
-        <Text style={[styles.text, isPrimary ? styles.primaryText : styles.secondaryText]}>
-          {title}
-        </Text>
+        <Text style={styles.secondaryText}>{title}</Text>
       )}
     </TouchableOpacity>
   );
@@ -43,30 +66,42 @@ export default function Button({
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 8,
+    borderRadius: 12,
+    overflow: 'hidden',
+    shadowColor: colors.primary[400],
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  gradient: {
+    paddingVertical: 14,
+    paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  primaryButton: {
-    backgroundColor: colors.primary[600],
-  },
   secondaryButton: {
-    backgroundColor: colors.gray[200],
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   disabledButton: {
     opacity: 0.5,
   },
-  text: {
-    fontSize: 16,
+  primaryText: {
+    color: colors.white,
+    fontSize: 15,
     fontWeight: '600',
     textAlign: 'center',
   },
-  primaryText: {
-    color: colors.white,
-  },
   secondaryText: {
-    color: colors.gray[900],
+    color: colors.gray[100],
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

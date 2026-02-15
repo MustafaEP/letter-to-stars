@@ -35,6 +35,7 @@ export default function Input({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
+        placeholderTextColor={colors.gray[500]}
         secureTextEntry={secureTextEntry}
         multiline={multiline}
         numberOfLines={numberOfLines}
@@ -47,33 +48,34 @@ export default function Input({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    marginBottom: 14,
   },
   label: {
-    color: colors.gray[700],
+    color: colors.gray[300],
     fontWeight: '500',
     marginBottom: 8,
-    fontSize: 14,
+    fontSize: 13,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.gray[300],
-    borderRadius: 8,
-    paddingHorizontal: 16,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    paddingHorizontal: 14,
     paddingVertical: 12,
-    fontSize: 16,
-    backgroundColor: colors.white,
+    fontSize: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    color: colors.gray[100],
   },
   inputError: {
-    borderColor: colors.red[500],
+    borderColor: colors.red[400],
   },
   multiline: {
     minHeight: 100,
     paddingTop: 12,
   },
   errorText: {
-    color: colors.red[500],
-    fontSize: 12,
+    color: colors.red[400],
+    fontSize: 11,
     marginTop: 4,
   },
 });
