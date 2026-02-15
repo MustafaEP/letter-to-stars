@@ -1,5 +1,5 @@
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { LogOut, List, Plus, User, Calendar, Sparkles } from 'lucide-react';
+import { LogOut, List, Plus, User, Calendar } from 'lucide-react';
 import { tokenUtils } from '../../utils/token';
 import { authApi } from '../../api/auth.api';
 
@@ -26,10 +26,11 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/diary/calendar" className="flex items-center gap-3 group">
-            <div className="relative">
-              <Sparkles className="w-7 h-7 text-cyan-400 animate-pulse-glow" />
-              <div className="absolute inset-0 blur-xl bg-cyan-400/30 animate-pulse"></div>
-            </div>
+            <img
+              src="/logo.png"
+              alt="Letter to Stars"
+              className="h-8 w-8 object-contain drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]"
+            />
             <span className="text-xl font-bold text-cosmic-gradient">
               Letter to Stars
             </span>
