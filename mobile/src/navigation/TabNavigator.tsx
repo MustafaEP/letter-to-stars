@@ -1,10 +1,12 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { Platform } from 'react-native';
 import CalendarScreen from '../screens/diary/CalendarScreen';
 import DiaryListScreen from '../screens/diary/DiaryListScreen';
 import DiaryCreateScreen from '../screens/diary/DiaryCreateScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
+import { colors } from '../styles/globalStyles';
 
 export type TabParamList = {
   Calendar: undefined;
@@ -34,9 +36,21 @@ export default function TabNavigator() {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#0284c7',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: colors.primary[400],
+        tabBarInactiveTintColor: colors.gray[500],
         headerShown: false,
+        tabBarStyle: {
+          backgroundColor: 'rgba(10, 14, 39, 0.95)',
+          borderTopColor: 'rgba(255, 255, 255, 0.1)',
+          borderTopWidth: 1,
+          paddingBottom: Platform.OS === 'ios' ? 20 : 8,
+          height: Platform.OS === 'ios' ? 85 : 65,
+          elevation: 0,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+        },
       })}
     >
       <Tab.Screen 
