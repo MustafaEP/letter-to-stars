@@ -14,7 +14,7 @@ export default function GoogleButton({ text = 'Google ile Devam Et' }: GoogleBut
         <button
             onClick={handleGoogleLogin}
             type="button"
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium text-gray-700"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white/10 border-2 border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300 font-medium text-gray-100 backdrop-blur-sm"
         >
             {/* Google Icon SVG */}
             <svg className="w-5 h-5" viewBox="0 0 24 24">

@@ -1,24 +1,31 @@
 import { useNavigate } from 'react-router-dom';
-import { Home, ArrowLeft, Search } from 'lucide-react';
+import { Home, ArrowLeft, Search, Star } from 'lucide-react';
+import StarField from '../components/ui/Starfield';
 
 export default function NotFound() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 px-4">
-      <div className="text-center">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4">
+      {/* Starfield Background */}
+      <StarField count={150} showShootingStars={true} />
+      
+      {/* Content */}
+      <div className="relative z-10 text-center">
         {/* 404 Illustration */}
         <div className="mb-8">
-          <div className="inline-flex items-center justify-center w-32 h-32 bg-white rounded-full shadow-lg mb-6">
-            <Search className="w-16 h-16 text-primary-600" />
+          <div className="inline-flex items-center justify-center w-32 h-32 glass-card rounded-full shadow-2xl mb-6 animate-float">
+            <Search className="w-16 h-16 text-cyan-400" />
           </div>
-          <h1 className="text-9xl font-bold text-primary-600 mb-4">404</h1>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Sayfa Bulunamadı
+          <h1 className="text-9xl font-bold text-cosmic-gradient mb-4 glow-ice">404</h1>
+          <h2 className="text-4xl font-bold text-gray-100 mb-4 flex items-center justify-center gap-3">
+            <Star className="w-8 h-8 text-cyan-400 animate-pulse" />
+            Kayıp Yıldız
+            <Star className="w-8 h-8 text-cyan-400 animate-pulse" />
           </h2>
-          <p className="text-gray-600 mb-8 max-w-md mx-auto">
-            Aradığınız sayfa taşınmış, silinmiş veya hiç var olmamış olabilir.
-            Anasayfaya dönerek devam edebilirsiniz.
+          <p className="text-gray-300 text-lg mb-8 max-w-md mx-auto">
+            Aradığınız sayfa yıldızlar arasında kaybolmuş. 
+            Takvime dönerek yıldız haritanıza geri dönebilirsiniz.
           </p>
         </div>
 
@@ -26,7 +33,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-colors border border-gray-300"
+            className="btn-secondary flex items-center justify-center gap-2 px-6 py-3"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Geri Dön</span>
@@ -34,10 +41,10 @@ export default function NotFound() {
           
           <button
             onClick={() => navigate('/diary/calendar')}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+            className="btn-primary flex items-center justify-center gap-2 px-6 py-3"
           >
             <Home className="w-5 h-5" />
-            <span>Ana Sayfa</span>
+            <span>Yıldız Haritası</span>
           </button>
         </div>
       </div>

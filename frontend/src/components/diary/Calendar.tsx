@@ -64,23 +64,23 @@ export default function Calendar() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="glass-card p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold text-gray-100">
           {format(currentDate, 'MMMM yyyy', { locale: tr })}
         </h2>
 
         <div className="flex items-center gap-2">
           <button
             onClick={previousMonth}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-white/10 rounded-xl transition-all duration-300 text-gray-300 hover:text-cyan-400"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={nextMonth}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-white/10 rounded-xl transition-all duration-300 text-gray-300 hover:text-cyan-400"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -88,54 +88,58 @@ export default function Calendar() {
       </div>
 
       {/* Weekday Headers */}
-      <div className="grid grid-cols-7 gap-2 mb-2">
+      <div className="grid grid-cols-7 gap-2 mb-3">
         {['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map((day) => (
           <div
             key={day}
-            className="text-center text-sm font-medium text-gray-600 py-2"
+            className="text-center text-sm font-bold text-cyan-400 py-2"
           >
             {day}
           </div>
         ))}
       </div>
 
-        {/* Calendar Grid - Responsive */}
-        <div className="grid grid-cols-7 gap-1 sm:gap-2">
+      {/* Calendar Grid - Responsive */}
+      <div className="grid grid-cols-7 gap-2">
         {/* Padding days */}
         {Array.from({ length: paddingDays }).map((_, i) => (
-            <div key={`padding-${i}`} className="aspect-square" />
+          <div key={`padding-${i}`} className="aspect-square" />
         ))}
 
         {/* Month days */}
         {daysInMonth.map((day) => {
-            const hasDiary = hasEntry(day);
-            const isCurrentDay = isToday(day);
+          const hasDiary = hasEntry(day);
+          const isCurrentDay = isToday(day);
 
-            return (
+          return (
             <div
-                key={day.toISOString()}
-                onClick={() => hasDiary && handleDayClick(day)}
-                className={`
-                aspect-square flex flex-col items-center justify-center rounded-lg
-                transition-all
-                ${hasDiary ? 'cursor-pointer bg-primary-50 hover:bg-primary-100' : 'hover:bg-gray-50'}
-                ${isCurrentDay ? 'ring-2 ring-primary-500' : ''}
-                `}
+              key={day.toISOString()}
+              onClick={() => hasDiary && handleDayClick(day)}
+              className={`
+                aspect-square flex flex-col items-center justify-center rounded-xl
+                transition-all duration-300
+                ${
+                  hasDiary
+                    ? 'cursor-pointer bg-cyan-500/20 hover:bg-cyan-500/30 hover:scale-105 border border-cyan-400/30'
+                    : 'hover:bg-white/5 border border-white/5'
+                }
+                ${isCurrentDay ? 'ring-2 ring-cyan-400 shadow-lg shadow-cyan-400/20' : ''}
+              `}
             >
-                <span
-                className={`text-xs sm:text-sm font-medium ${
-                    hasDiary ? 'text-primary-900' : 'text-gray-700'
+              <span
+                className={`text-sm font-bold ${
+                  hasDiary ? 'text-gray-100' : 'text-gray-400'
                 }`}
-                >
+              >
                 {format(day, 'd')}
-                </span>
-                {hasDiary && (
-                <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 fill-yellow-500 mt-0.5 sm:mt-1" />
-                )}
+              </span>
+              {hasDiary && (
+                <Star className="w-4 h-4 text-cyan-400 fill-cyan-400 mt-1 animate-pulse" />
+              )}
             </div>
-            );
+          );
         })}
-        </div>
+      </div>
     </div>
   );
 }

@@ -6,8 +6,9 @@ import { z } from 'zod';
 import { authApi } from '../api/auth.api';
 import toast from 'react-hot-toast';
 import { tokenUtils } from '../utils/token';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Sparkles, Star } from 'lucide-react';
 import GoogleButton from '../components/auth/GoogleButton';
+import StarField from '../components/ui/Starfield';
 
 // Validation schema
 const registerSchema = z.object({
@@ -72,108 +73,121 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100">
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Kayıt Ol
-          </h1>
-          <p className="text-gray-600">
-            Yeni bir hesap oluştur ✨
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/* Starfield Background */}
+      <StarField count={200} showShootingStars={true} />
+      
+      {/* Content */}
+      <div className="relative z-10 w-full max-w-md px-4">
+        <div className="glass-card p-8 animate-slide-up">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-4">
+              <div className="relative">
+                <Star className="w-16 h-16 text-cyan-400 animate-float" fill="currentColor" />
+                <div className="absolute inset-0 blur-2xl bg-cyan-400/40 animate-pulse"></div>
+              </div>
+            </div>
+            <h1 className="text-4xl font-bold text-cosmic-gradient mb-3 glow-ice">
+              Hesap Oluştur
+            </h1>
+            <p className="text-gray-300 text-lg">
+              Yıldızlara ulaşmaya hazır mısın? ✨
+            </p>
+          </div>
+
+          {/* Google Button */}
+          <div className="mb-6">
+            <GoogleButton text="Google ile Kayıt Ol" />
+          </div>
+
+          {/* Divider */}
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-3 bg-[#0a0e27]/80 text-gray-400">veya email ile</span>
+            </div>
+          </div>
+
+          {/* Error Alert */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3 backdrop-blur-sm">
+              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-300">{error}</p>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Ad Soyad (Opsiyonel)
+              </label>
+              <input
+                {...register('name')}
+                type="text"
+                className="input-field"
+                placeholder="Adınız"
+              />
+              {errors.name && (
+                <p className="text-sm text-red-400 mt-2">{errors.name.message}</p>
+              )}
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Email
+              </label>
+              <input
+                {...register('email')}
+                type="email"
+                className="input-field"
+                placeholder="ornek@email.com"
+              />
+              {errors.email && (
+                <p className="text-sm text-red-400 mt-2">{errors.email.message}</p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Şifre
+              </label>
+              <input
+                {...register('password')}
+                type="password"
+                className="input-field"
+                placeholder="••••••••"
+              />
+              {errors.password && (
+                <p className="text-sm text-red-400 mt-2">{errors.password.message}</p>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full btn-primary py-3 text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <Sparkles className="w-4 h-4" />
+              {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
+            </button>
+          </form>
+
+          {/* Login Link */}
+          <p className="text-center text-sm text-gray-400 mt-6">
+            Zaten hesabın var mı?{' '}
+            <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
+              Giriş Yap
+            </Link>
           </p>
         </div>
-
-        {/* Google Button */}
-        <div className="mb-6">
-          <GoogleButton text="Google ile Kayıt Ol" />
-        </div>
-
-        {/* Divider */}
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">veya</span>
-          </div>
-        </div>
-
-        {/* Error Alert */}
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-800">{error}</p>
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Ad Soyad (Opsiyonel)
-            </label>
-            <input
-              {...register('name')}
-              type="text"
-              className="input-field"
-              placeholder="Adınız"
-            />
-            {errors.name && (
-              <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>
-            )}
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              {...register('email')}
-              type="email"
-              className="input-field"
-              placeholder="ornek@email.com"
-            />
-            {errors.email && (
-              <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
-            )}
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Şifre
-            </label>
-            <input
-              {...register('password')}
-              type="password"
-              className="input-field"
-              placeholder="••••••••"
-            />
-            {errors.password && (
-              <p className="text-sm text-red-600 mt-1">{errors.password.message}</p>
-            )}
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
-          </button>
-        </form>
-
-        {/* Login Link */}
-        <p className="text-center text-sm text-gray-600 mt-6">
-          Zaten hesabın var mı?{' '}
-          <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">
-            Giriş Yap
-          </Link>
-        </p>
       </div>
     </div>
   );

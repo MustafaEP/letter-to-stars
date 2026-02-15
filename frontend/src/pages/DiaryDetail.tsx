@@ -12,7 +12,8 @@ import {
   Loader2,
   Trash2,
   Upload,
-  AlertCircle, 
+  AlertCircle,
+  Sparkles,
 } from 'lucide-react';
 
 export default function DiaryDetail() {
@@ -91,7 +92,7 @@ export default function DiaryDetail() {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-cyan-400" />
         </div>
       </Layout>
     );
@@ -100,12 +101,14 @@ export default function DiaryDetail() {
   if (error || !diary) {
     return (
       <Layout>
-        <div className="text-center py-12">
-          <p className="text-red-600">{error || 'Günlük bulunamadı'}</p>
+        <div className="glass-card text-center py-12 px-6">
+          <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <p className="text-red-400 text-lg mb-6">{error || 'Günlük bulunamadı'}</p>
           <button
             onClick={() => navigate('/diary/list')}
-            className="mt-4 btn-primary"
+            className="btn-primary inline-flex items-center gap-2"
           >
+            <ArrowLeft className="w-4 h-4" />
             Geri Dön
           </button>
         </div>
@@ -122,42 +125,44 @@ export default function DiaryDetail() {
         <div className="mb-8 flex items-center justify-between">
           <button
             onClick={() => navigate('/diary/list')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+            className="flex items-center gap-2 text-gray-300 hover:text-cyan-400 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>Geri</span>
+            <span className="font-medium">Geri</span>
           </button>
 
-          <div className="flex items-center gap-4 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              <span>{new Date(diary.entryDate).toLocaleDateString('tr-TR')}</span>
+          <div className="flex items-center gap-4 text-sm">
+            <div className="glass-card px-4 py-2 flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-cyan-400" />
+              <span className="text-gray-300">{new Date(diary.entryDate).toLocaleDateString('tr-TR')}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" />
-              <span>IELTS {diary.ieltsLevel}</span>
+            <div className="glass-card px-4 py-2 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-cyan-400" />
+              <span className="text-cyan-400 font-bold">IELTS {diary.ieltsLevel}</span>
             </div>
           </div>
         </div>
+
         {/* Error Alert */}
         {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-800">{error}</p>
-        </div>
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3 backdrop-blur-sm">
+            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-red-300">{error}</p>
+          </div>
         )}
+
         {/* Image Section */}
         {diary.imageUrl ? (
           <div className="mb-8 relative group">
             <img
               src={`${API_BASE_URL}${diary.imageUrl}`}
               alt="Diary"
-              className="w-full h-96 object-cover rounded-xl shadow-lg"
+              className="w-full h-96 object-cover rounded-2xl border border-white/10"
             />
             <button
               onClick={handleRemoveImage}
               disabled={isDeleting}
-              className="absolute top-4 right-4 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-50"
+              className="absolute top-4 right-4 p-3 bg-red-500/90 backdrop-blur-sm text-white rounded-xl hover:bg-red-600 transition-all duration-300 opacity-0 group-hover:opacity-100 disabled:opacity-50"
             >
               {isDeleting ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -169,17 +174,17 @@ export default function DiaryDetail() {
         ) : (
           // Resim yoksa upload butonu
           <div className="mb-8">
-            <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+            <label className="glass-card flex flex-col items-center justify-center w-full h-64 cursor-pointer hover:bg-white/10 transition-all duration-300 border border-white/10 border-dashed rounded-2xl">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 {isUploading ? (
                   <>
-                    <Loader2 className="w-12 h-12 text-primary-600 animate-spin mb-3" />
-                    <p className="text-sm text-gray-600">Resim yükleniyor...</p>
+                    <Loader2 className="w-12 h-12 text-cyan-400 animate-spin mb-3" />
+                    <p className="text-sm text-gray-300">Resim yükleniyor...</p>
                   </>
                 ) : (
                   <>
-                    <Upload className="w-12 h-12 text-gray-400 mb-3" />
-                    <p className="mb-2 text-sm text-gray-600">
+                    <Upload className="w-12 h-12 text-cyan-400 mb-3" />
+                    <p className="mb-2 text-sm text-gray-300">
                       <span className="font-semibold">Bu günlüğe fotoğraf ekle</span>
                     </p>
                     <p className="text-xs text-gray-500">PNG, JPG, GIF (max. 10MB)</p>
@@ -200,27 +205,27 @@ export default function DiaryDetail() {
         {/* Comparison */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           {/* Original Text */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="glass-card p-6">
             <div className="flex items-center gap-2 mb-4">
-              <BookOpen className="w-5 h-5 text-gray-600" />
-              <h2 className="text-lg font-semibold text-gray-900">
+              <BookOpen className="w-5 h-5 text-gray-400" />
+              <h2 className="text-lg font-bold text-gray-100">
                 Senin Yazdığın
               </h2>
             </div>
-            <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+            <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">
               {diary.originalText}
             </p>
           </div>
 
           {/* AI Rewritten Text */}
-          <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl shadow-sm border border-primary-200 p-6">
+          <div className="glass-card p-6 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border-cyan-400/30">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-5 h-5 text-primary-600" />
-              <h2 className="text-lg font-semibold text-gray-900">
+              <Sparkles className="w-5 h-5 text-cyan-400" />
+              <h2 className="text-lg font-bold text-cyan-400">
                 AI Dönüşümü (IELTS {diary.ieltsLevel})
               </h2>
             </div>
-            <p className="text-gray-800 whitespace-pre-wrap leading-relaxed font-medium">
+            <p className="text-gray-100 whitespace-pre-wrap leading-relaxed font-medium">
               {diary.rewrittenText}
             </p>
           </div>
@@ -228,20 +233,21 @@ export default function DiaryDetail() {
 
         {/* New Words */}
         {diary.newWords.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Yeni Kelimeler 📚 ({diary.newWords.length})
+          <div className="glass-card p-6">
+            <h2 className="text-lg font-bold text-gray-100 mb-5 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-cyan-400" />
+              Yeni Kelimeler ({diary.newWords.length})
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {diary.newWords.map((word, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-gray-50 rounded-lg border border-gray-200"
+                  className="p-4 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-400/30 transition-colors"
                 >
-                  <div className="font-semibold text-primary-700 mb-1">
+                  <div className="font-bold text-cyan-400 mb-1">
                     {word.english_word}
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-400">
                     {word.turkish_meaning}
                   </div>
                 </div>

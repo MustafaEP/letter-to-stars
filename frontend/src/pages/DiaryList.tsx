@@ -5,13 +5,13 @@ import type { DiaryListResponse } from '../types/diary.types';
 import Layout from '../components/layout/Layout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import { 
-  Calendar, 
   TrendingUp, 
   ChevronLeft, 
   ChevronRight,
   Plus,
   Star,
   Image as ImageIcon,
+  Sparkles,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -56,11 +56,12 @@ export default function DiaryList() {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Günlüklerim 📖
+            <h1 className="text-4xl font-bold text-cosmic-gradient mb-3 glow-ice">
+              Günlüklerim
             </h1>
-            <p className="text-gray-600">
-              {data?.meta.total || 0} günlük • {data?.meta.total || 0} yıldız ⭐
+            <p className="text-gray-300 text-lg flex items-center gap-2">
+              <Star className="w-5 h-5 text-cyan-400" fill="currentColor" />
+              {data?.meta.total || 0} günlük • {data?.meta.total || 0} yıldız
             </p>
           </div>
 
@@ -75,18 +76,22 @@ export default function DiaryList() {
 
         {/* Empty State */}
         {data && data.data.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
-            <Star className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <div className="glass-card text-center py-16 px-6">
+            <div className="relative inline-block mb-6">
+              <Star className="w-20 h-20 text-cyan-400 animate-float" fill="currentColor" />
+              <div className="absolute inset-0 blur-2xl bg-cyan-400/30"></div>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-100 mb-3">
               Henüz günlük yazmadın
             </h3>
-            <p className="text-gray-600 mb-6">
-              İlk günlüğünü yaz ve yıldız toplamaya başla!
+            <p className="text-gray-400 mb-8 max-w-md mx-auto">
+              İlk günlüğünü yaz ve yıldızlar arasında yerini al!
             </p>
             <button
               onClick={() => navigate('/diary')}
-              className="btn-primary"
+              className="btn-primary inline-flex items-center gap-2"
             >
+              <Sparkles className="w-5 h-5" />
               Hemen Başla
             </button>
           </div>
@@ -95,7 +100,7 @@ export default function DiaryList() {
         {/* Diary List */}
         {data && data.data.length > 0 && (
           <>
-            <div className="space-y-4">
+            <div className="space-y-5">
               {data.data.map((diary) => (
                 <div
                   key={diary.id}
@@ -105,21 +110,21 @@ export default function DiaryList() {
                       .split('T')[0];
                     navigate(`/diary/${dateString}`);
                   }}
-                  className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                  className="glass-card p-6 hover:bg-white/10 transition-all duration-300 cursor-pointer group"
                 >
                   <div className="flex gap-6">
                     {/* Image Thumbnail */}
                     {diary.imageUrl ? (
-                      <div className="w-32 h-32 flex-shrink-0">
+                      <div className="w-40 h-40 flex-shrink-0">
                         <img
                           src={`${API_BASE_URL}${diary.imageUrl}`}
                           alt="Diary"
-                          className="w-full h-full object-cover rounded-lg"
+                          className="w-full h-full object-cover rounded-xl border border-white/10 group-hover:border-cyan-400/30 transition-colors"
                         />
                       </div>
                     ) : (
-                      <div className="w-32 h-32 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <ImageIcon className="w-12 h-12 text-gray-300" />
+                      <div className="w-40 h-40 flex-shrink-0 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center group-hover:border-cyan-400/30 transition-colors">
+                        <ImageIcon className="w-16 h-16 text-gray-600" />
                       </div>
                     )}
 
@@ -127,34 +132,34 @@ export default function DiaryList() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Star className="w-6 h-6 text-primary-600 fill-primary-600" />
+                          <div className="w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0 border border-cyan-400/30">
+                            <Star className="w-6 h-6 text-cyan-400" fill="currentColor" />
                           </div>
                           <div>
-                            <div className="font-semibold text-gray-900">
+                            <div className="font-bold text-gray-100 text-lg">
                               {format(new Date(diary.entryDate), 'd MMMM yyyy', { locale: tr })}
                             </div>
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-gray-400">
                               {format(new Date(diary.createdAt), 'HH:mm', { locale: tr })}
                             </div>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 px-3 py-1 bg-primary-50 rounded-full">
-                          <TrendingUp className="w-4 h-4 text-primary-600" />
-                          <span className="text-sm font-medium text-primary-700">
+                        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl border border-cyan-400/30">
+                          <TrendingUp className="w-4 h-4 text-cyan-400" />
+                          <span className="text-sm font-bold text-cyan-400">
                             IELTS {diary.ieltsLevel}
                           </span>
                         </div>
                       </div>
 
-                      <p className="text-gray-700 line-clamp-2 mb-3">
+                      <p className="text-gray-300 line-clamp-2 mb-4 leading-relaxed">
                         {diary.originalText}
                       </p>
 
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
+                      <div className="flex items-center gap-4 text-sm text-gray-400">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-cyan-400" />
                           <span>{diary.newWords.length} yeni kelime</span>
                         </div>
                       </div>
@@ -166,23 +171,23 @@ export default function DiaryList() {
 
             {/* Pagination */}
             {data.meta.totalPages > 1 && (
-              <div className="mt-8 flex items-center justify-center gap-2">
+              <div className="mt-8 flex items-center justify-center gap-3">
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="p-3 rounded-xl btn-secondary disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
 
-                <span className="px-4 py-2 text-sm text-gray-600">
+                <div className="px-6 py-3 glass-card text-sm text-gray-300 font-medium">
                   {currentPage} / {data.meta.totalPages}
-                </span>
+                </div>
 
                 <button
                   onClick={() => setCurrentPage((p) => Math.min(data.meta.totalPages, p + 1))}
                   disabled={currentPage === data.meta.totalPages}
-                  className="p-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="p-3 rounded-xl btn-secondary disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>

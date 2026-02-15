@@ -26,48 +26,56 @@ export default function StatsCards() {
       title: 'Toplam Günlük',
       value: stats.total,
       icon: Star,
-      color: 'text-yellow-600',
-      bg: 'bg-yellow-50',
+      color: 'text-cyan-400',
+      bg: 'from-cyan-500/20 to-blue-500/20',
+      border: 'border-cyan-400/30',
+      glow: 'shadow-cyan-500/20',
     },
     {
       title: 'Bu Ay',
       value: stats.thisMonth,
       icon: Calendar,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50',
+      color: 'text-blue-400',
+      bg: 'from-blue-500/20 to-indigo-500/20',
+      border: 'border-blue-400/30',
+      glow: 'shadow-blue-500/20',
     },
     {
       title: 'Ardışık Gün',
       value: stats.currentStreak,
       icon: TrendingUp,
-      color: 'text-green-600',
-      bg: 'bg-green-50',
+      color: 'text-green-400',
+      bg: 'from-green-500/20 to-emerald-500/20',
+      border: 'border-green-400/30',
+      glow: 'shadow-green-500/20',
     },
     {
       title: 'En Uzun Seri',
       value: stats.longestStreak,
       icon: Award,
-      color: 'text-purple-600',
-      bg: 'bg-purple-50',
+      color: 'text-purple-400',
+      bg: 'from-purple-500/20 to-pink-500/20',
+      border: 'border-purple-400/30',
+      glow: 'shadow-purple-500/20',
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
       {cards.map((card) => {
         const Icon = card.icon;
         return (
           <div
             key={card.title}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+            className={`glass-card p-6 bg-gradient-to-br ${card.bg} border ${card.border} hover:scale-105 transition-all duration-300 ${card.glow} shadow-lg`}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">{card.title}</p>
-                <p className="text-3xl font-bold text-gray-900">{card.value}</p>
+                <p className="text-sm text-gray-400 mb-2">{card.title}</p>
+                <p className="text-4xl font-bold text-gray-100">{card.value}</p>
               </div>
-              <div className={`${card.bg} p-3 rounded-lg`}>
-                <Icon className={`w-6 h-6 ${card.color}`} />
+              <div className={`p-3 rounded-xl bg-white/10`}>
+                <Icon className={`w-7 h-7 ${card.color}`} />
               </div>
             </div>
           </div>

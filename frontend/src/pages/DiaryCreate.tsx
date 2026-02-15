@@ -117,28 +117,28 @@ export default function DiaryCreate() {
     <Layout>
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Bugünün Günlüğü ✍️
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-bold text-cosmic-gradient mb-3 glow-ice">
+            Bugünün Günlüğü
           </h1>
-          <p className="text-gray-600">
-            Gününü İngilizce anlat, AI yardımıyla geliştir
+          <p className="text-gray-300 text-lg">
+            Gününü İngilizce anlat, AI ile yıldızlara ulaş ✨
           </p>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-800">{error}</p>
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3 backdrop-blur-sm">
+            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-red-300">{error}</p>
           </div>
         )}
 
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Text Area */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="glass-card p-6">
+            <label className="block text-sm font-medium text-gray-300 mb-3">
               Bugün ne yaptın? (İngilizce)
             </label>
             <textarea
@@ -148,17 +148,17 @@ export default function DiaryCreate() {
               placeholder="Today was an incredible day. I woke up early in the morning and decided to go for a run in the park..."
               disabled={isLoading}
             />
-            <div className="flex justify-between items-center mt-2">
+            <div className="flex justify-between items-center mt-3">
               {errors.originalText && (
-                <p className="text-sm text-red-600">{errors.originalText.message}</p>
+                <p className="text-sm text-red-400">{errors.originalText.message}</p>
               )}
               <p
                 className={`text-sm ml-auto ${
                   charCount < 50
-                    ? 'text-red-600'
+                    ? 'text-red-400'
                     : charCount > 10000
-                    ? 'text-red-600'
-                    : 'text-gray-500'
+                    ? 'text-red-400'
+                    : 'text-gray-400'
                 }`}
               >
                 {charCount} / 10000 karakter
@@ -167,20 +167,20 @@ export default function DiaryCreate() {
           </div>
 
           {/* IELTS Level Selector */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="glass-card p-6">
+            <label className="block text-sm font-medium text-gray-300 mb-4">
               Hedef IELTS Seviyesi
             </label>
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-4 gap-4">
               {[6, 7, 8, 9].map((level) => (
                 <label
                   key={level}
                   className={`
-                    relative flex items-center justify-center p-4 rounded-lg border-2 cursor-pointer transition-all
+                    relative flex items-center justify-center p-5 rounded-xl border-2 cursor-pointer transition-all duration-300
                     ${
                       watch('ieltsLevel') === level
-                        ? 'border-primary-600 bg-primary-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-cyan-400/50 bg-cyan-500/20 shadow-lg shadow-cyan-500/20'
+                        : 'border-white/10 bg-white/5 hover:border-cyan-400/30 hover:bg-white/10'
                     }
                   `}
                 >
@@ -194,8 +194,8 @@ export default function DiaryCreate() {
                   />
 
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900">{level}</div>
-                    <div className="text-xs text-gray-600 mt-1">
+                    <div className="text-3xl font-bold text-gray-100">{level}</div>
+                    <div className="text-xs text-gray-400 mt-1">
                       {level === 6 && 'Basic'}
                       {level === 7 && 'Good'}
                       {level === 8 && 'Very Good'}
@@ -208,33 +208,33 @@ export default function DiaryCreate() {
           </div>
 
           {/* Image Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="glass-card p-6">
+            <label className="block text-sm font-medium text-gray-300 mb-4">
               Fotoğraf Ekle (Opsiyonel)
             </label>
 
             {imagePreview ? (
               // Preview
-              <div className="relative">
+              <div className="relative group">
                 <img
                   src={imagePreview}
                   alt="Preview"
-                  className="w-full h-64 object-cover rounded-lg"
+                  className="w-full h-64 object-cover rounded-xl border border-white/10"
                 />
                 <button
                   type="button"
                   onClick={handleRemoveImage}
-                  className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                  className="absolute top-3 right-3 p-2 bg-red-500/90 backdrop-blur-sm text-white rounded-full hover:bg-red-600 transition-all duration-300 opacity-0 group-hover:opacity-100"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
             ) : (
               // Upload button
-              <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+              <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-white/10 border-dashed rounded-xl cursor-pointer bg-white/5 hover:bg-white/10 transition-all duration-300">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <ImageIcon className="w-12 h-12 text-gray-400 mb-3" />
-                  <p className="mb-2 text-sm text-gray-600">
+                  <ImageIcon className="w-12 h-12 text-cyan-400 mb-3" />
+                  <p className="mb-2 text-sm text-gray-300">
                     <span className="font-semibold">Tıkla</span> veya sürükle bırak
                   </p>
                   <p className="text-xs text-gray-500">PNG, JPG, GIF (max. 10MB)</p>
@@ -254,7 +254,7 @@ export default function DiaryCreate() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full btn-primary py-3 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full btn-primary py-4 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>

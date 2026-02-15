@@ -173,7 +173,7 @@ export default function Profile() {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-cyan-400" />
         </div>
       </Layout>
     );
@@ -184,31 +184,32 @@ export default function Profile() {
   return (
     <Layout>
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Profil Ayarları</h1>
+        <h1 className="text-4xl font-bold text-cosmic-gradient mb-3 glow-ice text-center">Profil Ayarları</h1>
+        <p className="text-gray-300 text-center mb-8">Hesap bilgilerini yönet</p>
 
         {/* Alerts */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-800">{error}</p>
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3 backdrop-blur-sm">
+            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-red-300">{error}</p>
           </div>
         )}
 
         {success && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-green-800">{success}</p>
+          <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-start gap-3 backdrop-blur-sm">
+            <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-green-300">{success}</p>
           </div>
         )}
 
         <div className="grid md:grid-cols-3 gap-8">
           {/* Sidebar - Profile Picture */}
           <div className="md:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="glass-card p-6">
               <div className="text-center">
                 {/* Profile Picture */}
                 <div className="relative inline-block">
-                  <div className="w-32 h-32 rounded-full bg-gray-200 overflow-hidden">
+                  <div className="w-32 h-32 rounded-full bg-white/10 overflow-hidden border-2 border-cyan-400/30">
                     {user?.profilePicture ? (
                       <img
                         src={`${API_URL}${user.profilePicture}`}
@@ -216,7 +217,7 @@ export default function Profile() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-gray-400">
+                      <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-cyan-400">
                         {user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase()}
                       </div>
                     )}
@@ -225,7 +226,7 @@ export default function Profile() {
                   {/* Upload Button */}
                   <label
                     htmlFor="profile-picture"
-                    className="absolute bottom-0 right-0 bg-primary-600 text-white p-2 rounded-full cursor-pointer hover:bg-primary-700 transition-colors"
+                    className="absolute bottom-0 right-0 bg-gradient-to-r from-cyan-500 to-blue-600 text-white p-2 rounded-full cursor-pointer hover:scale-110 transition-transform shadow-lg"
                   >
                     {isUploading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -243,16 +244,16 @@ export default function Profile() {
                   </label>
                 </div>
 
-                <h2 className="text-xl font-semibold text-gray-900 mt-4">
+                <h2 className="text-xl font-bold text-gray-100 mt-4">
                   {user?.name || 'İsimsiz Kullanıcı'}
                 </h2>
-                <p className="text-sm text-gray-600">{user?.email}</p>
+                <p className="text-sm text-gray-400">{user?.email}</p>
 
                 {/* Remove Picture */}
                 {user?.profilePicture && (
                   <button
                     onClick={handleRemovePicture}
-                    className="mt-4 text-sm text-red-600 hover:text-red-700 flex items-center gap-1 mx-auto"
+                    className="mt-4 text-sm text-red-400 hover:text-red-300 flex items-center gap-1 mx-auto transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                     <span>Resmi Sil</span>
@@ -264,24 +265,24 @@ export default function Profile() {
             {/* Logout All Devices */}
             <button
               onClick={handleLogoutAll}
-              className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+              className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/10 transition-all duration-300 backdrop-blur-sm"
             >
               <LogOut className="w-4 h-4" />
-              <span>Tüm Cihazlardan Çıkış</span>
+              <span className="font-medium">Tüm Cihazlardan Çıkış</span>
             </button>
           </div>
 
           {/* Main Content */}
           <div className="md:col-span-2 space-y-6">
             {/* Profile Info Form */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="glass-card p-6">
+              <h3 className="text-lg font-bold text-gray-100 mb-5">
                 Profil Bilgileri
               </h3>
 
-              <form onSubmit={handleProfileSubmit(onProfileSubmit)} className="space-y-4">
+              <form onSubmit={handleProfileSubmit(onProfileSubmit)} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Ad Soyad
                   </label>
                   <input
@@ -291,12 +292,12 @@ export default function Profile() {
                     placeholder="Adınız"
                   />
                   {profileErrors.name && (
-                    <p className="text-sm text-red-600 mt-1">{profileErrors.name.message}</p>
+                    <p className="text-sm text-red-400 mt-2">{profileErrors.name.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Bio
                   </label>
                   <textarea
@@ -306,7 +307,7 @@ export default function Profile() {
                     placeholder="Kendinizden bahsedin..."
                   />
                   {profileErrors.bio && (
-                    <p className="text-sm text-red-600 mt-1">{profileErrors.bio.message}</p>
+                    <p className="text-sm text-red-400 mt-2">{profileErrors.bio.message}</p>
                   )}
                 </div>
 
@@ -317,14 +318,14 @@ export default function Profile() {
             </div>
 
             {/* Change Password Form */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="glass-card p-6">
+              <h3 className="text-lg font-bold text-gray-100 mb-5">
                 Şifre Değiştir
               </h3>
 
-              <form onSubmit={handlePasswordSubmit(onPasswordSubmit)} className="space-y-4">
+              <form onSubmit={handlePasswordSubmit(onPasswordSubmit)} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Eski Şifre
                   </label>
                   <input
@@ -334,14 +335,14 @@ export default function Profile() {
                     placeholder="••••••••"
                   />
                   {passwordErrors.oldPassword && (
-                    <p className="text-sm text-red-600 mt-1">
+                    <p className="text-sm text-red-400 mt-2">
                       {passwordErrors.oldPassword.message}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Yeni Şifre
                   </label>
                   <input
@@ -351,7 +352,7 @@ export default function Profile() {
                     placeholder="••••••••"
                   />
                   {passwordErrors.newPassword && (
-                    <p className="text-sm text-red-600 mt-1">
+                    <p className="text-sm text-red-400 mt-2">
                       {passwordErrors.newPassword.message}
                     </p>
                   )}

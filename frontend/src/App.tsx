@@ -24,19 +24,21 @@ function App() {
           toastOptions={{
             duration: 4000,
             style: {
-              background: '#fff',
-              color: '#363636',
+              background: 'rgba(10, 14, 39, 0.95)',
+              color: '#e5e7eb',
+              border: '1px solid rgba(56, 189, 248, 0.2)',
+              backdropFilter: 'blur(12px)',
             },
             success: {
               iconTheme: {
-                primary: '#10b981',
-                secondary: '#fff',
+                primary: '#38bdf8',
+                secondary: '#0a0e27',
               },
             },
             error: {
               iconTheme: {
-                primary: '#ef4444',
-                secondary: '#fff',
+                primary: '#f87171',
+                secondary: '#0a0e27',
               },
             },
           }}
