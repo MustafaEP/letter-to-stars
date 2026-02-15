@@ -61,13 +61,13 @@ fi
 
   echo "Building & starting backend container..."
   cd "$COMPOSE_DIR"
-  docker compose -p "$COMPOSE_PROJECT_NAME" -f backend.compose.yml up -d --build
+  docker compose -p "$COMPOSE_PROJECT_NAME" -f backend.compose.yml up -d --build --force-recreate
 
   echo "Building & starting ai-service container..."
-  docker compose -p "$COMPOSE_PROJECT_NAME" -f ai.compose.yml up -d --build
+  docker compose -p "$COMPOSE_PROJECT_NAME" -f ai.compose.yml up -d --build --force-recreate
 
   echo "Building & starting frontend container..."
-  docker compose -p "$COMPOSE_PROJECT_NAME" -f frontend.compose.yml up -d --build
+  docker compose -p "$COMPOSE_PROJECT_NAME" -f frontend.compose.yml up -d --build --force-recreate
 
   echo "Reloading reverse-proxy nginx..."
   docker exec -i "$PROXY_CONTAINER" nginx -s reload
