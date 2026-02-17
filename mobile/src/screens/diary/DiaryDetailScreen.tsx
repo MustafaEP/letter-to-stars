@@ -4,9 +4,10 @@ import {
   Text,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import AppLogo from '../../components/common/AppLogo';
 import { format } from 'date-fns';
@@ -23,6 +24,8 @@ type DiaryDetailRouteProp = RouteProp<RootStackParamList, 'DiaryDetail'>;
 
 export default function DiaryDetailScreen() {
   const route = useRoute<DiaryDetailRouteProp>();
+  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const { date } = route.params;
   const [diary, setDiary] = useState<Diary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -71,8 +74,17 @@ export default function DiaryDetailScreen() {
       
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         {/* Header - Fixed */}
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerTitle}>Günlük Detay</Text>
+        <View style={[styles.headerContainer, { paddingTop: insets.top + 12 }]}>
+          <View style={styles.headerTopRow}>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            >
+              <Ionicons name="arrow-back" size={24} color={colors.gray[100]} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Günlük Detay</Text>
+          </View>
           <View style={styles.headerInfo}>
             <View style={styles.dateContainer}>
               <Ionicons name="calendar-outline" size={16} color={colors.primary[400]} />
@@ -168,17 +180,25 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     paddingHorizontal: 16,
-    paddingTop: 50,
     paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-    backgroundColor: 'rgba(10, 14, 39, 0.95)',
+    backgroundColor: colors.cosmic.dark,
+  },
+  headerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  backButton: {
+    marginRight: 12,
+    padding: 4,
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: colors.gray[100],
-    marginBottom: 12,
+    flex: 1,
   },
   headerInfo: {
     flexDirection: 'row',
