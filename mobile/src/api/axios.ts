@@ -2,9 +2,9 @@ import axios from 'axios';
 import { tokenUtils } from '../utils/token';
 
 // DEĞİŞTİR: VPS IP veya domain
-// const API_URL = 'http://lettertostars.mustafaerhanportakal.com/api';
+const API_URL = 'https://lettertostars.mustafaerhanportakal.com/api';
 // Localhost test için (Android Emulator)
-const API_URL = 'http://10.0.2.2:3000/api';
+// const API_URL = 'http://10.0.2.2:3000/api';
 // iOS Simulator için
 // const API_URL = 'http://localhost:3000/api';
 
