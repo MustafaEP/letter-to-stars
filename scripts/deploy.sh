@@ -59,6 +59,9 @@ fi
   export APP_VERSION="${APP_VERSION:-$(git rev-parse --short HEAD)}"
   echo "APP_VERSION=$APP_VERSION"
 
+  echo "Removing orphan containers if any..."
+  docker rm -f lettertostars-backend lettertostars-ai lettertostars-web 2>/dev/null || true
+
   echo "Building & starting backend container..."
   cd "$COMPOSE_DIR"
   docker compose -p "$COMPOSE_PROJECT_NAME" -f backend.compose.yml up -d --build --force-recreate

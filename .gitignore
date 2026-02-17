@@ -18,6 +18,10 @@ build/
 
 # logs
 logs/*.log
+logs/*.log*
+logs/*.gz
+logs/*
+!logs/.gitkeep
 
 # Uploads (keep structure, ignore files)
 frontend/uploads/**/*
