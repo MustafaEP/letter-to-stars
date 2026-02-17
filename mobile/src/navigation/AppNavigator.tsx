@@ -6,11 +6,17 @@ import { ActivityIndicator, View } from 'react-native';
 import AuthNavigator from './AuthNavigator';
 import TabNavigator from './TabNavigator';
 import DiaryDetailScreen from '../screens/diary/DiaryDetailScreen';
+import EditProfileScreen from '../screens/profile/EditProfileScreen';
+import ChangePasswordScreen from '../screens/profile/ChangePasswordScreen';
+import AboutScreen from '../screens/profile/AboutScreen';
 
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
   DiaryDetail: { date: string };
+  EditProfile: undefined;
+  ChangePassword: undefined;
+  About: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -35,8 +41,11 @@ export default function AppNavigator() {
             <Stack.Screen 
               name="DiaryDetail" 
               component={DiaryDetailScreen}
-              options={{ headerShown: true, title: 'Günlük Detay' }}
+              options={{ headerShown: false }}
             />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="About" component={AboutScreen} options={{ headerShown: false }} />
           </>
         ) : (
           <Stack.Screen name="Auth" component={AuthNavigator} />

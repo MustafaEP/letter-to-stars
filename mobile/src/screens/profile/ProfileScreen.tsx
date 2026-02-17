@@ -5,18 +5,25 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import AppLogo from '../../components/common/AppLogo';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../contexts/AuthContext';
 import Starfield from '../../components/common/Starfield';
 import CustomAlert from '../../components/common/CustomAlert';
 import { colors } from '../../styles/globalStyles';
 
+const SUPPORT_EMAIL = 'destek@lettertostars.mustafaerhanportakal.com';
+const PRIVACY_URL = 'https://lettertostars.mustafaerhanportakal.com/privacy';
+
 export default function ProfileScreen() {
+  const navigation = useNavigation<any>();
   const { user, logout } = useAuth();
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+  const [showComingSoonAlert, setShowComingSoonAlert] = useState(false);
 
   const handleLogout = () => {
     setShowLogoutAlert(true);
@@ -32,23 +39,35 @@ export default function ProfileScreen() {
     title,
     onPress,
     showChevron = true,
+    comingSoon = false,
   }: {
     icon: keyof typeof Ionicons.glyphMap;
     title: string;
     onPress?: () => void;
     showChevron?: boolean;
+    comingSoon?: boolean;
   }) => (
-    <TouchableOpacity 
-      style={styles.menuItem} 
-      onPress={onPress}
+    <TouchableOpacity
+      style={[styles.menuItem, comingSoon && styles.menuItemDisabled]}
+      onPress={comingSoon ? () => setShowComingSoonAlert(true) : onPress}
       activeOpacity={0.7}
     >
       <View style={styles.menuLeft}>
-        <Ionicons name={icon} size={22} color={colors.primary[400]} />
-        <Text style={styles.menuText}>{title}</Text>
+        <Ionicons
+          name={icon}
+          size={22}
+          color={comingSoon ? colors.gray[500] : colors.primary[400]}
+        />
+        <Text style={[styles.menuText, comingSoon && styles.menuTextDisabled]}>
+          {title}
+        </Text>
       </View>
-      {showChevron && (
-        <Ionicons name="chevron-forward" size={20} color={colors.gray[500]} />
+      {comingSoon ? (
+        <Text style={styles.comingSoonBadge}>Yakında</Text>
+      ) : (
+        showChevron && (
+          <Ionicons name="chevron-forward" size={20} color={colors.gray[500]} />
+        )
       )}
     </TouchableOpacity>
   );
@@ -106,31 +125,51 @@ export default function ProfileScreen() {
           <View style={styles.menuSection}>
             <Text style={styles.sectionTitle}>HESAP</Text>
             <View style={styles.menuCard}>
-              <MenuItem icon="person-outline" title="Profili Düzenle" />
+              <MenuItem
+                icon="person-outline"
+                title="Profili Düzenle"
+                onPress={() => navigation.navigate('EditProfile')}
+              />
               <View style={styles.divider} />
-              <MenuItem icon="lock-closed-outline" title="Şifre Değiştir" />
+              <MenuItem
+                icon="lock-closed-outline"
+                title="Şifre Değiştir"
+                onPress={() => navigation.navigate('ChangePassword')}
+              />
             </View>
           </View>
 
           <View style={styles.menuSection}>
             <Text style={styles.sectionTitle}>UYGULAMA</Text>
             <View style={styles.menuCard}>
-              <MenuItem icon="notifications-outline" title="Bildirimler" />
+              <MenuItem icon="notifications-outline" title="Bildirimler" comingSoon />
               <View style={styles.divider} />
-              <MenuItem icon="moon-outline" title="Karanlık Mod" showChevron={false} />
+              <MenuItem icon="moon-outline" title="Karanlık Mod" comingSoon />
               <View style={styles.divider} />
-              <MenuItem icon="language-outline" title="Dil" />
+              <MenuItem icon="language-outline" title="Dil" comingSoon />
             </View>
           </View>
 
           <View style={styles.menuSection}>
             <Text style={styles.sectionTitle}>HAKKINDA</Text>
             <View style={styles.menuCard}>
-              <MenuItem icon="help-circle-outline" title="Yardım & Destek" />
+              <MenuItem
+                icon="help-circle-outline"
+                title="Yardım & Destek"
+                onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`)}
+              />
               <View style={styles.divider} />
-              <MenuItem icon="document-text-outline" title="Gizlilik Politikası" />
+              <MenuItem
+                icon="document-text-outline"
+                title="Gizlilik Politikası"
+                onPress={() => Linking.openURL(PRIVACY_URL)}
+              />
               <View style={styles.divider} />
-              <MenuItem icon="information-circle-outline" title="Uygulama Hakkında" />
+              <MenuItem
+                icon="information-circle-outline"
+                title="Uygulama Hakkında"
+                onPress={() => navigation.navigate('About')}
+              />
             </View>
           </View>
 
@@ -153,6 +192,16 @@ export default function ProfileScreen() {
           </View>
         </ScrollView>
       </SafeAreaView>
+
+      {/* Coming Soon Alert */}
+      <CustomAlert
+        visible={showComingSoonAlert}
+        title="Yakında"
+        message="Bu özellik üzerinde çalışıyoruz. Çok yakında eklenecek!"
+        type="info"
+        buttons={[{ text: 'Tamam' }]}
+        onClose={() => setShowComingSoonAlert(false)}
+      />
 
       {/* Logout Confirmation Alert */}
       <CustomAlert
@@ -290,6 +339,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.gray[200],
     marginLeft: 12,
+  },
+  menuTextDisabled: {
+    color: colors.gray[500],
+  },
+  menuItemDisabled: {
+    opacity: 0.8,
+  },
+  comingSoonBadge: {
+    fontSize: 11,
+    color: colors.gray[500],
+    fontWeight: '500',
+    fontStyle: 'italic',
   },
   divider: {
     height: 1,
