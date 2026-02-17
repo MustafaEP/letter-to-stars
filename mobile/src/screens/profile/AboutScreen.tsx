@@ -17,7 +17,7 @@ import Starfield from '../../components/common/Starfield';
 import { colors } from '../../styles/globalStyles';
 
 const APP_VERSION = Constants.expoConfig?.version || '1.0.0';
-const SUPPORT_EMAIL = 'destek@lettertostars.mustafaerhanportakal.com';
+const SUPPORT_EMAIL = 'portakalm11@gmail.com';
 const PRIVACY_URL = 'https://lettertostars.mustafaerhanportakal.com/privacy';
 const WEBSITE_URL = 'https://lettertostars.mustafaerhanportakal.com';
 
