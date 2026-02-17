@@ -56,6 +56,10 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
       newErrors.password = 'Şifre gereklidir';
     } else if (password.length < 8) {
       newErrors.password = 'Şifre en az 8 karakter olmalıdır';
+    } else if (password.length > 64) {
+      newErrors.password = 'Şifre en fazla 64 karakter olabilir';
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+      newErrors.password = 'Şifre en az bir büyük harf, bir küçük harf ve bir rakam içermelidir';
     }
 
     setErrors(newErrors);

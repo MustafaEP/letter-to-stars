@@ -26,7 +26,14 @@ const profileSchema = z.object({
 
 const passwordSchema = z.object({
   oldPassword: z.string().min(8, 'Eski şifre en az 8 karakter olmalıdır'),
-  newPassword: z.string().min(8, 'Yeni şifre en az 8 karakter olmalıdır'),
+  newPassword: z
+    .string()
+    .min(8, 'Yeni şifre en az 8 karakter olmalıdır')
+    .max(64, 'Yeni şifre en fazla 64 karakter olabilir')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      'Şifre en az bir büyük harf, bir küçük harf ve bir rakam içermelidir'
+    ),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
