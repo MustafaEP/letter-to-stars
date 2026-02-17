@@ -1,0 +1,32 @@
+{% extends "admin/index.html" %}
+{% block content %}
+
+<div style="
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  color: white;
+">
+  <h2 style="margin: 0 0 8px 0; font-size: 22px;">
+    📊 Analytics Dashboard
+  </h2>
+  <p style="margin: 0 0 16px 0; opacity: 0.9;">
+    Kullanıcı büyümesi, günlük istatistikleri ve daha fazlası
+  </p>
+  <a href="/admin/analytics/dailystats/dashboard/"
+     style="
+       background: white;
+       color: #667eea;
+       padding: 10px 20px;
+       border-radius: 8px;
+       text-decoration: none;
+       font-weight: 600;
+       font-size: 14px;
+     ">
+    Dashboard'u Aç →
+  </a>
+</div>
+
+{{ block.super }}
+{% endblock %}
