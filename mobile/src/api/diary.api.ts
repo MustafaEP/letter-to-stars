@@ -4,6 +4,7 @@ import {
   Diary,
   DiaryListResponse,
   DiaryStats,
+  CalendarEntry,
 } from '../types/diary.types';
 
 export const diaryApi = {
@@ -26,6 +27,13 @@ export const diaryApi = {
 
   getStats: async (): Promise<DiaryStats> => {
     const response = await apiClient.get<DiaryStats>('/diary/stats');
+    return response.data;
+  },
+
+  getCalendar: async (year: number, month: number): Promise<CalendarEntry[]> => {
+    const response = await apiClient.get<CalendarEntry[]>(
+      `/diary/calendar/${year}/${month}`,
+    );
     return response.data;
   },
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../contexts/AuthContext';
 import Starfield from '../../components/common/Starfield';
 import CustomAlert from '../../components/common/CustomAlert';
+import { diaryApi } from '../../api/diary.api';
+import { DiaryStats } from '../../types/diary.types';
 import { colors } from '../../styles/globalStyles';
 
 const SUPPORT_EMAIL = 'destek@lettertostars.mustafaerhanportakal.com';
@@ -24,6 +26,30 @@ export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
   const [showComingSoonAlert, setShowComingSoonAlert] = useState(false);
+  const [stats, setStats] = useState<DiaryStats | null>(null);
+  const [totalWords, setTotalWords] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchProfileStats = async () => {
+      try {
+        // Günlük istatistikleri
+        const data = await diaryApi.getStats();
+        setStats(data);
+
+        // Toplam kelime sayısı (tüm günlüklerdeki yeni kelimelerin toplamı)
+        const diariesResponse = await diaryApi.getAll(1, 1000);
+        const words = diariesResponse.data.reduce(
+          (sum, diary) => sum + (diary.newWords?.length || 0),
+          0,
+        );
+        setTotalWords(words);
+      } catch (error) {
+        console.error('Profil istatistikleri yüklenemedi:', error);
+      }
+    };
+
+    fetchProfileStats();
+  }, []);
 
   const handleLogout = () => {
     setShowLogoutAlert(true);
@@ -107,15 +133,21 @@ export default function ProfileScreen() {
             {/* Stats */}
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>-</Text>
+                <Text style={styles.statValue}>
+                  {stats ? stats.total : '-'}
+                </Text>
                 <Text style={styles.statLabel}>Günlük</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>-</Text>
+                <Text style={styles.statValue}>
+                  {stats ? stats.currentStreak : '-'}
+                </Text>
                 <Text style={styles.statLabel}>Streak</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>-</Text>
+                <Text style={styles.statValue}>
+                  {totalWords !== null ? totalWords : '-'}
+                </Text>
                 <Text style={styles.statLabel}>Kelime</Text>
               </View>
             </View>

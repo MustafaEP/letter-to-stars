@@ -35,3 +35,9 @@ export interface DiaryStats {
     currentStreak: number;
     longestStreak: number;
 }
+
+export interface CalendarEntry {
+  id: string;
+  entryDate: string;
+  ieltsLevel: number;
+}

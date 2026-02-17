@@ -13,6 +13,7 @@ import { diaryApi } from '../../api/diary.api';
 import { DiaryStats } from '../../types/diary.types';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import Starfield from '../../components/common/Starfield';
+import Calendar from '../../components/diary/Calendar';
 import { colors } from '../../styles/globalStyles';
 
 export default function CalendarScreen() {
@@ -117,16 +118,9 @@ export default function CalendarScreen() {
             </View>
           )}
 
-          {/* Info */}
-          <View style={styles.infoContainer}>
-            <View style={styles.infoCard}>
-              <Text style={styles.infoIcon}>💡</Text>
-              <Text style={styles.infoTitle}>Takvim Görünümü Yakında</Text>
-              <Text style={styles.infoText}>
-                Günlük yazdığın günleri takvimde görebileceğin özel görünüm
-                üzerinde çalışıyoruz!
-              </Text>
-            </View>
+          {/* Calendar */}
+          <View style={styles.calendarContainer}>
+            <Calendar />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -216,33 +210,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
   },
-  infoContainer: {
+  calendarContainer: {
     paddingHorizontal: 16,
     paddingBottom: 24,
-  },
-  infoCard: {
-    backgroundColor: 'rgba(56, 189, 248, 0.1)',
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(56, 189, 248, 0.2)',
-    alignItems: 'center',
-  },
-  infoIcon: {
-    fontSize: 28,
-    marginBottom: 8,
-  },
-  infoTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.primary[400],
-    marginBottom: 6,
-    textAlign: 'center',
-  },
-  infoText: {
-    fontSize: 13,
-    color: colors.gray[300],
-    lineHeight: 19,
-    textAlign: 'center',
   },
 });

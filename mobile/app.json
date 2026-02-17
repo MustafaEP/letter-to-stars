@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0a0e27"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.yildizlaramektup.app"
@@ -19,6 +21,11 @@
     "android": {
       "package": "com.yildizlaramektup.app",
       "permissions": []
+    },
+    "extra": {
+      "eas": {
+        "projectId": "214444a2-2c97-450a-ab31-3f816d5e1f3e"
+      }
     }
   }
 }
