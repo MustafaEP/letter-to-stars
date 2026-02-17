@@ -54,7 +54,7 @@ export default function DiaryList() {
     <Layout>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-4xl font-bold text-cosmic-gradient mb-3 glow-ice">
               Günlüklerim
@@ -112,10 +112,10 @@ export default function DiaryList() {
                   }}
                   className="glass-card p-6 hover:bg-white/10 transition-all duration-300 cursor-pointer group"
                 >
-                  <div className="flex gap-6">
+                  <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
                     {/* Image Thumbnail */}
                     {diary.imageUrl ? (
-                      <div className="w-40 h-40 flex-shrink-0">
+                      <div className="w-full h-48 md:w-40 md:h-40 flex-shrink-0">
                         <img
                           src={`${API_BASE_URL}${diary.imageUrl}`}
                           alt="Diary"
@@ -123,14 +123,14 @@ export default function DiaryList() {
                         />
                       </div>
                     ) : (
-                      <div className="w-40 h-40 flex-shrink-0 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center group-hover:border-cyan-400/30 transition-colors">
+                      <div className="w-full h-48 md:w-40 md:h-40 flex-shrink-0 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center group-hover:border-cyan-400/30 transition-colors">
                         <ImageIcon className="w-16 h-16 text-gray-600" />
                       </div>
                     )}
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0 border border-cyan-400/30">
                             <Star className="w-6 h-6 text-cyan-400" fill="currentColor" />
