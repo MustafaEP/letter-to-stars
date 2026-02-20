@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { LogOut, List, Plus, User, Calendar, Menu, X } from 'lucide-react';
+import { LogOut, List, Plus, User, Calendar, Menu, X, BookOpen } from 'lucide-react';
 import { tokenUtils } from '../../utils/token';
 import { authApi } from '../../api/auth.api';
 
@@ -80,7 +80,17 @@ export default function Navbar() {
               <Plus className="w-4 h-4" />
               <span className="text-sm font-medium">Yeni Günlük</span>
             </Link>
-
+            <Link
+              to="/vocabulary"
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
+                isActive('/vocabulary')
+                  ? 'bg-purple-500/20 text-purple-400 border border-purple-400/30'
+                  : 'text-gray-300 hover:bg-white/10 hover:text-purple-300'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span className="text-sm font-medium">Kelime Defteri</span>
+            </Link>
             <Link
               to="/profile"
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
@@ -149,6 +159,19 @@ export default function Navbar() {
             >
               <Plus className="w-4 h-4" />
               <span className="text-sm font-medium">Yeni Günlük</span>
+            </Link>
+
+            <Link
+              to="/vocabulary"
+              onClick={handleNavClick}
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-300 ${
+                isActive('/vocabulary')
+                  ? 'bg-purple-500/20 text-purple-400 border border-purple-400/30'
+                  : 'text-gray-300 hover:bg-white/10 hover:text-purple-300'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span className="text-sm font-medium">Kelime Defteri</span>
             </Link>
 
             <div className="flex items-center gap-2">

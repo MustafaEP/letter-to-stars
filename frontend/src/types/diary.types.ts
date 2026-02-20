@@ -41,3 +41,16 @@ export interface CalendarEntry {
   entryDate: string;
   ieltsLevel: number;
 }
+
+export interface VocabularyWord {
+  word: string;
+  meaning: string;
+  date: string;
+  diaryId: string;
+  ieltsLevel: number;
+}
+
+export interface VocabularyResponse {
+  total: number;
+  words: VocabularyWord[];
+}

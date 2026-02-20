@@ -13,6 +13,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';  
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import OfflineIndicator from './components/OfflineIndicator';
+import VocabularyPage from './pages/VocabularyPage';
 
 function App() {
   useOnlineStatus();  
@@ -88,6 +89,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vocabulary"
+            element={
+              <ProtectedRoute>
+                <VocabularyPage />
               </ProtectedRoute>
             }
           />

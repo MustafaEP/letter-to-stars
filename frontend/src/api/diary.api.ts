@@ -5,6 +5,7 @@ import type {
   DiaryListResponse,
   DiaryStats,
   CalendarEntry,
+  VocabularyResponse,
 } from '../types/diary.types';
 
 export const diaryApi = {
@@ -86,6 +87,14 @@ export const diaryApi = {
    */
   removeImage: async (diaryId: string): Promise<Diary> => {
     const response = await apiClient.delete<Diary>(`/diary/${diaryId}/image`);
+    return response.data;
+  },
+
+  /**
+   * Kelime listesi
+   */
+  getVocabulary: async (): Promise<VocabularyResponse> => {
+    const response = await apiClient.get<VocabularyResponse>('/diary/vocabulary');
     return response.data;
   },
 };
