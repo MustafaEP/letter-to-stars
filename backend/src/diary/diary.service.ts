@@ -90,6 +90,59 @@ export class DiaryService {
     };
   }
 
+
+  /**
+   * Kelime listesi
+   */
+  async getVocabulary(userId: string) {
+    const diaries = await this.prisma.diary.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        entryDate: true,
+        ieltsLevel: true,
+        newWords: true,
+      },
+      orderBy: { entryDate: 'desc' },
+    });
+  
+    // Tüm kelimeleri topla
+    const allWords: {
+      word: string;
+      meaning: string;
+      date: Date;
+      diaryId: string;
+      ieltsLevel: number;
+    }[] = [];
+  
+    for (const diary of diaries) {
+      const words = diary.newWords as Array<{
+        english_word: string;
+        turkish_meaning: string;
+      }>;
+  
+      if (Array.isArray(words)) {
+        words.forEach((w) => {
+          allWords.push({
+            word: w.english_word,
+            meaning: w.turkish_meaning,
+            date: diary.entryDate,
+            diaryId: diary.id,
+            ieltsLevel: diary.ieltsLevel,
+          });
+        });
+      }
+    }
+  
+    // Alfabetik sırala
+    allWords.sort((a, b) => a.word.localeCompare(b.word));
+  
+    return {
+      total: allWords.length,
+      words: allWords,
+    };
+  }
+
   /**
    * Belirli tarihteki günlüğü getir
    */

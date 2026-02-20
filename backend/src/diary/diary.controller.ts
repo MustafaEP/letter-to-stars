@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -20,6 +21,8 @@ import { DiaryService } from './diary.service';
 import { CreateDiaryDto } from './dto/create-diary.dto';
 import { QueryDiaryDto } from './dto/query-diary.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import type { User } from '@prisma/client';
 
 @Controller('diary')
 export class DiaryController {
@@ -57,6 +60,16 @@ export class DiaryController {
   @Get('stats')
   async getStats(@CurrentUser() user: { id: string }) {
     return this.diaryService.getStats(user.id);
+  }
+
+  /** 
+   *GET /api/diary/vocabulary
+   * Kelime listesi
+   */
+  @Get('vocabulary')
+  @UseGuards(JwtAuthGuard)
+  getVocabulary(@CurrentUser() user: User) {
+    return this.diaryService.getVocabulary(user.id);
   }
 
   /**
