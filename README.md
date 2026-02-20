@@ -6,7 +6,9 @@ AI destekli kişisel İngilizce öğrenme ve günlük uygulaması. Kullanıcıla
 
 ## 🌐 Canlı / Live
 
-**Uygulama adresi:** [lettertostars.mustafaerhanportakal.com](http://lettertostars.mustafaerhanportakal.com/)
+**Web uygulaması adresi:** [lettertostars.mustafaerhanportakal.com](http://lettertostars.mustafaerhanportakal.com/)
+
+**Android için Expo EAS APK:** [lettertostars Expo APK indir](https://expo.dev/artifacts/eas/r3sC2HkRCmRkZFiX3Wxsbr.apk)
 
 Yayın, Git commit ile otomatik güncellenir: depoya push yapıldığında canlı ortam yeniden deploy edilir.
 
@@ -53,12 +55,15 @@ Yayın, Git commit ile otomatik güncellenir: depoya push yapıldığında canl�
          │
          ▼
 [ Gemini API ]
+         │
+         ▼
+[ Django – Admin, Analytics, Raporlama ]
 ```
 
 - **Frontend:** React + TypeScript + Tailwind — hızlı UI, animasyon, günlük/kart/yıldız deneyimi
 - **Backend:** NestJS + TypeScript — auth, günlük kayıtları, görsel upload, AI servisi ile iletişim
 - **AI katmanı:** FastAPI — Gemini çağrıları, prompt mühendisliği, NLP; mikroservis olarak izole
-- **Django:** İleride admin panel, analytics ve gelişim raporları için planlanıyor
+- **Django:** Admin paneli, analytics ve gelişim raporları için kullanılır
 
 ---
 
@@ -69,7 +74,7 @@ Yayın, Git commit ile otomatik güncellenir: depoya push yapıldığında canl�
 | `frontend/` | React + Vite + Tailwind |
 | `backend/` | NestJS ana API |
 | `ai-service/` | FastAPI + Gemini entegrasyonu |
-| `django/` | İleride admin & analytics |
+| `django/` | Admin & analytics |
 | `infra/` | Docker Compose (prod) |
 
 ### Önerilen frontend bileşenleri
@@ -113,6 +118,7 @@ Yayın, Git commit ile otomatik güncellenir: depoya push yapıldığında canl�
 | **2** | Kullanıcı sistemi, günlük arşivi, yıldız takvimi |
 | **3** | Görsel upload, ilerleme grafikleri, günlük streak |
 | **4** | Haftalık AI geri bildirimi, kişisel kelime defteri |
+| **5** | Django admin + analytics + gelişim raporları |
 
 ---
 
@@ -121,7 +127,7 @@ Yayın, Git commit ile otomatik güncellenir: depoya push yapıldığında canl�
 - **Frontend:** React, TypeScript, Vite, Tailwind CSS
 - **Backend:** NestJS, TypeScript
 - **AI:** FastAPI, Python, Gemini API
-- **İleride:** Django (admin, analytics)
+- **Analytics & Admin:** Django (admin, analytics)
 
 ---
 
@@ -136,6 +142,9 @@ cd backend && npm install && npm run start:dev
 
 # AI Service
 cd ai-service && pip install -r requirements.txt && uvicorn app.main:app --reload
+
+# Admin & Analytics (Django)
+cd django && pip install -r requirements.txt && python manage.py runserver
 ```
 
 AI servisi için `ai-service/.env` dosyasında Gemini API anahtarını tanımlayın (`.env.example` referans alınabilir).
@@ -148,6 +157,7 @@ Bu proje ile:
 - **Yazılım:** Clean architecture, mikroservis, API tasarımı, frontend state yönetimi
 - **AI:** Prompt engineering, NLP kavramları, yapılandırılmış çıktı, model sınırlamalarıyla çalışma
 - **Ürün:** Kullanıcı akışı, MVP odaklı geliştirme, portfolyo projesi
+- **Analytics:** Admin arayüzü, gelişim raporları ve veri görselleştirme
 
 ---
 
