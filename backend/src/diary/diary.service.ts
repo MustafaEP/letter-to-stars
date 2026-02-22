@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ConflictException, ForbiddenException } 
 import { PrismaService } from '../prisma/prisma.service';
 import { AiClientService } from './ai-client.service';
 import { CreateDiaryDto } from './dto/create-diary.dto';
-import { DiaryResponseDto } from './dto/diary-response.dto';
+import { DiaryResponseDto, GrammarCorrectionDto, WordDto } from './dto/diary-response.dto';
 
 @Injectable()
 export class DiaryService {
@@ -44,6 +44,11 @@ export class DiaryService {
         userId,
         originalText: dto.originalText,
         rewrittenText: aiResponse.rewritten_text,
+        grammarCorrections: aiResponse.grammar_corrections,
+        writingTips: aiResponse.writing_tips,
+        strengths: aiResponse.strengths,
+        weaknesses: aiResponse.weaknesses,
+        overallFeedback: aiResponse.overall_feedback,
         ieltsLevel: dto.ieltsLevel,
         newWords: aiResponse.new_words,
         entryDate: today,
@@ -51,16 +56,7 @@ export class DiaryService {
     });
 
     // 4. Response DTO'ya dönüştür
-    return {
-      id: diary.id,
-      originalText: diary.originalText,
-      rewrittenText: diary.rewrittenText,
-      ieltsLevel: diary.ieltsLevel,
-      newWords: diary.newWords as any,  // Prisma Json type
-      imageUrl: diary.imageUrl,
-      entryDate: diary.entryDate,
-      createdAt: diary.createdAt,
-    };
+    return this.mapToResponseDto(diary);
   }
 
   /**
@@ -68,7 +64,7 @@ export class DiaryService {
    */
   async findAll(userId: string, page: number = 1, limit: number = 10) {
     const skip = (page - 1) * limit;
-
+  
     const [diaries, total] = await Promise.all([
       this.prisma.diary.findMany({
         where: { userId },
@@ -78,9 +74,9 @@ export class DiaryService {
       }),
       this.prisma.diary.count({ where: { userId } }),
     ]);
-
+  
     return {
-      data: diaries,
+      data: diaries.map(d => this.mapToResponseDto(d)), 
       meta: {
         total,
         page,
@@ -160,16 +156,7 @@ export class DiaryService {
       throw new NotFoundException('Bu tarihte günlük bulunamadı');
     }
 
-    return {
-      id: diary.id,
-      originalText: diary.originalText,
-      rewrittenText: diary.rewrittenText,
-      ieltsLevel: diary.ieltsLevel,
-      newWords: diary.newWords as any,
-      imageUrl: diary.imageUrl,
-      entryDate: diary.entryDate,
-      createdAt: diary.createdAt,
-    };
+    return this.mapToResponseDto(diary);
   }
 
   /**
@@ -353,9 +340,14 @@ export class DiaryService {
       originalText: diary.originalText,
       rewrittenText: diary.rewrittenText,
       ieltsLevel: diary.ieltsLevel,
-      newWords: Array.isArray(diary.newWords) 
-        ? diary.newWords 
-        : JSON.parse(JSON.stringify(diary.newWords)),
+  
+      grammarCorrections: (diary.grammarCorrections ?? []) as GrammarCorrectionDto[],
+      writingTips: (diary.writingTips ?? []) as string[],
+      strengths: (diary.strengths ?? []) as string[],
+      weaknesses: (diary.weaknesses ?? []) as string[],
+      overallFeedback: diary.overallFeedback ?? undefined,
+  
+      newWords: (diary.newWords ?? []) as WordDto[],
       imageUrl: diary.imageUrl,
       entryDate: diary.entryDate,
       createdAt: diary.createdAt,
