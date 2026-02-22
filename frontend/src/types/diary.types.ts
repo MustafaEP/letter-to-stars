@@ -3,12 +3,23 @@ export interface Word {
     turkish_meaning: string;
 }
   
+export interface GrammarCorrection {
+    original: string;
+    corrected: string;
+    explanation: string;
+}
+
 export interface Diary {
     id: string;
     originalText: string;
     rewrittenText: string;
     ieltsLevel: number;
     newWords: Word[];
+    grammarCorrections?: GrammarCorrection[];
+    writingTips?: string[];
+    strengths?: string[];
+    weaknesses?: string[];
+    overallFeedback?: string;
     imageUrl: string | null;
     entryDate: string;  // ISO date string
     createdAt: string;
