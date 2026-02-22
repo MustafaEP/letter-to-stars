@@ -4,6 +4,7 @@ export interface User {
     name: string | null;
     role: string;
     profilePicture?: string | null;  
+    provider?: 'LOCAL' | 'GOOGLE';
     bio?: string | null;              
     emailVerified?: boolean;          
     lastLoginAt?: string;             
@@ -34,4 +35,13 @@ export interface UpdateProfileRequest {
 export interface ChangePasswordRequest {
   oldPassword: string;
   newPassword: string;
+}
+
+export interface UserStats {
+  totalEntries: number;
+  totalWords: number;
+  currentStreak: number;
+  longestStreak: number;
+  favoriteLevel: number | null;
+  ieltsDistribution: Record<number, number>;
 }
