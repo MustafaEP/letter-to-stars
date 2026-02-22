@@ -51,6 +51,30 @@ class DiaryEntry(models.Model):
         db_column='newWords',
         default=list
     )
+    grammar_corrections = models.JSONField(
+        db_column='grammarCorrections',
+        null=True, blank=True,
+        default=list
+    )
+    writing_tips = models.JSONField(
+        db_column='writingTips',
+        null=True, blank=True,
+        default=list
+    )
+    strengths = models.JSONField(
+        db_column='strengths',
+        null=True, blank=True,
+        default=list
+    )
+    weaknesses = models.JSONField(
+        db_column='weaknesses',
+        null=True, blank=True,
+        default=list
+    )
+    overall_feedback = models.TextField(
+        db_column='overallFeedback',
+        null=True, blank=True
+    )
     image_url = models.TextField(
         db_column='imageUrl',
         null=True, blank=True
