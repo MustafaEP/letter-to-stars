@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User, AuthProvider } from '@prisma/client';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -87,4 +88,111 @@ export class UsersService {
         },
         });
     }
+
+
+  /**
+   * Kullanıcı istatistiklerini getir
+   */
+  async getUserStats(userId: string) {
+    const diaries = await this.prisma.diary.findMany({
+      where: { userId },
+      orderBy: { entryDate: 'desc' },
+      select: {
+        entryDate: true,
+        newWords: true,
+        ieltsLevel: true,
+      },
+    });
+
+    // Toplam günlük
+    const totalEntries = diaries.length;
+
+    // Toplam kelime
+    const totalWords = diaries.reduce((sum, diary) => {
+      const words = diary.newWords as any[];
+      return sum + (Array.isArray(words) ? words.length : 0);
+    }, 0);
+
+    // IELTS dağılımı
+    const ieltsDistribution = diaries.reduce((acc, diary) => {
+      acc[diary.ieltsLevel] = (acc[diary.ieltsLevel] || 0) + 1;
+      return acc;
+    }, {} as Record<number, number>);
+
+    const favoriteLevel = Object.entries(ieltsDistribution).sort(
+      ([, a], [, b]) => b - a,
+    )[0]?.[0];
+
+    // Streak hesaplama
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const sortedDates = diaries
+      .map((d) => new Date(d.entryDate))
+      .sort((a, b) => b.getTime() - a.getTime());
+
+    if (sortedDates.length > 0) {
+      const lastEntry = sortedDates[0];
+      const diffDays = Math.floor(
+        (today.getTime() - lastEntry.getTime()) / (1000 * 60 * 60 * 24),
+      );
+
+      // Son günlük bugün veya dün ise streak devam ediyor
+      if (diffDays <= 1) {
+        currentStreak = 1;
+        tempStreak = 1;
+
+        for (let i = 1; i < sortedDates.length; i++) {
+          const diff = Math.floor(
+            (sortedDates[i - 1].getTime() - sortedDates[i].getTime()) /
+              (1000 * 60 * 60 * 24),
+          );
+
+          if (diff === 1) {
+            currentStreak++;
+            tempStreak++;
+          } else {
+            longestStreak = Math.max(longestStreak, tempStreak);
+            tempStreak = 1;
+          }
+        }
+      }
+
+      longestStreak = Math.max(longestStreak, tempStreak);
+    }
+
+    return {
+      totalEntries,
+      totalWords,
+      currentStreak,
+      longestStreak,
+      favoriteLevel: favoriteLevel ? parseInt(favoriteLevel) : null,
+      ieltsDistribution,
+    };
+  }
+
+  /**
+   * Hesabı kalıcı olarak sil
+   */
+  async deleteAccount(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Kullanıcı bulunamadı');
+    }
+
+    // Cascade delete (Prisma schema'da onDelete: Cascade var)
+    // Diary ve RefreshToken otomatik silinecek
+    await this.prisma.user.delete({
+      where: { id: userId },
+    });
+
+    return { success: true };
+  }
 }
