@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from app.models import RewriteRequest, RewriteResponse
+from app.models import RewriteRequest, RewriteResponse, RewriteResponseUpgrade
 from app.services.gemini_service import GeminiService
 import logging
 import os
@@ -55,6 +55,39 @@ async def rewrite_text(request: RewriteRequest):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
+@app.post("/rewrite-upgrade", response_model=RewriteResponseUpgrade)
+async def rewrite_text_upgrade(request: RewriteRequest):
+    """
+    Kullanıcının metnini IELTS seviyesine göre yeniden yazar. 
+    Kullanıcının metnindeki grammar hatalarını düzeltilir.
+    Kullanıcının metnindeki yeni kelimeler eklenir.
+    Kullanıcının metnindeki yazma ipuçları önerilir.
+    Kullanıcının metnindeki güçlü yönleri ve zayıf yönleri analiz edilir.
+    Kullanıcının metnindeki genel değerlendirme önerilir.
+    """
+    try:
+        # AI servisini çağır
+        result = gemini_service.rewrite_text_upgrade(
+            user_text=request.user_text,
+            ielts_level=request.ielts_level
+        )
+        
+        # Response model'e dönüştür
+        return RewriteResponseUpgrade(
+            original_text=request.user_text,
+            rewritten_text=result["rewritten_text"],
+            new_words=result["new_words"],
+            writing_tips=result["writing_tips"],
+            strengths=result["strengths"],
+            weaknesses=result["weaknesses"],
+            overall_feedback=result["overall_feedback"],
+            ielts_level=request.ielts_level
+        )
+        
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 
