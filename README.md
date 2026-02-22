@@ -74,15 +74,15 @@ Yayın, Git commit ile otomatik güncellenir: depoya push yapıldığında canl�
 | `frontend/` | React + Vite + Tailwind |
 | `backend/` | NestJS ana API |
 | `ai-service/` | FastAPI + Gemini entegrasyonu |
-| `django/` | Admin & analytics |
+| `admin/` | Django — Admin & analytics |
+| `mobile/` | Expo / React Native — Android uygulaması |
 | `infra/` | Docker Compose (prod) |
 
-### Önerilen frontend bileşenleri
-- `DiaryEditor` — Günlük metin alanı
-- `LevelSelector` — IELTS seviye seçimi
-- `ResultPanel` — Orijinal / dönüştürülmüş metin
-- `VocabularyList` — Yeni kelimeler + anlamlar
-- `StarCalendar` — Takvim / yıldız haritası görünümü
+### Frontend bileşenleri
+- `DiaryCreate` — Günlük oluşturma (metin, seviye seçimi)
+- `DiaryDetail` — Orijinal / dönüştürülmüş metin, kelimeler
+- `Calendar`, `CalendarView` — Takvim / yıldız haritası görünümü
+- `VocabularyPage` — Kelime defteri
 
 ---
 
@@ -98,8 +98,8 @@ Yayın, Git commit ile otomatik güncellenir: depoya push yapıldığında canl�
   "rewritten_text": "...",
   "new_words": [
     {
-      "word": "contemplate",
-      "meaning_tr": "derin düşünmek"
+      "english_word": "contemplate",
+      "turkish_meaning": "derin düşünmek"
     }
   ]
 }
@@ -144,7 +144,7 @@ cd backend && npm install && npm run start:dev
 cd ai-service && pip install -r requirements.txt && uvicorn app.main:app --reload
 
 # Admin & Analytics (Django)
-cd django && pip install -r requirements.txt && python manage.py runserver
+cd admin && pip install -r requirements.txt && python manage.py runserver
 ```
 
 AI servisi için `ai-service/.env` dosyasında Gemini API anahtarını tanımlayın (`.env.example` referans alınabilir).
