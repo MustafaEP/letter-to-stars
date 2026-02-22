@@ -14,6 +14,11 @@ import {
   Upload,
   AlertCircle,
   Sparkles,
+  CheckCircle2,
+  XCircle,
+  Lightbulb,
+  Target,
+  TrendingDown,
 } from 'lucide-react';
 
 export default function DiaryDetail() {
@@ -203,7 +208,7 @@ export default function DiaryDetail() {
         )}
 
         {/* Comparison */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid md:grid-cols-1 gap-6 mb-6">
           {/* Original Text */}
           <div className="glass-card p-6">
             <div className="flex items-center gap-2 mb-4">
@@ -231,23 +236,139 @@ export default function DiaryDetail() {
           </div>
         </div>
 
+        {/* Grammar Corrections */}
+        {diary.grammarCorrections && diary.grammarCorrections.length > 0 && (
+          <div className="glass-card p-6 mb-6 bg-gradient-to-br from-red-500/5 to-rose-500/5 border-red-400/20">
+            <h3 className="font-semibold text-gray-100 mb-5 flex items-center gap-2">
+              <div className="p-1.5 bg-red-500/20 rounded-lg">
+                <XCircle className="w-4 h-4 text-red-400" />
+              </div>
+              Gramer Düzeltmeleri
+              <span className="ml-auto text-xs text-red-400/70 bg-red-500/10 px-2 py-1 rounded-full border border-red-400/20">
+                {diary.grammarCorrections.length} düzeltme
+              </span>
+            </h3>
+            <div className="space-y-4">
+              {diary.grammarCorrections.map((correction, idx) => (
+                <div key={idx} className="border-l-2 border-red-400/40 pl-4 py-2">
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className="text-red-400 font-mono text-sm bg-red-500/10 border border-red-400/20 px-2.5 py-1 rounded-lg line-through">
+                      {correction.original}
+                    </span>
+                    <span className="text-gray-500">→</span>
+                    <span className="text-emerald-400 font-mono text-sm bg-emerald-500/10 border border-emerald-400/20 px-2.5 py-1 rounded-lg">
+                      {correction.corrected}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-400 flex items-start gap-1.5">
+                    <Lightbulb className="w-3.5 h-3.5 text-yellow-400/70 flex-shrink-0 mt-0.5" />
+                    {correction.explanation}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Writing Tips */}
+        {diary.writingTips && diary.writingTips.length > 0 && (
+          <div className="glass-card p-6 mb-6 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 border-blue-400/20">
+            <h3 className="font-semibold text-gray-100 mb-5 flex items-center gap-2">
+              <div className="p-1.5 bg-blue-500/20 rounded-lg">
+                <Lightbulb className="w-4 h-4 text-blue-400" />
+              </div>
+              Yazma Tavsiyeleri
+            </h3>
+            <ul className="space-y-3">
+              {diary.writingTips.map((tip, idx) => (
+                <li key={idx} className="flex items-start gap-3 group">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-xs text-blue-400 font-bold mt-0.5">
+                    {idx + 1}
+                  </span>
+                  <span className="text-gray-300 text-sm leading-relaxed">{tip}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Strengths & Weaknesses */}
+        {((diary.strengths && diary.strengths.length > 0) || (diary.weaknesses && diary.weaknesses.length > 0)) && (
+          <div className="grid md:grid-cols-2 gap-4 mb-6">
+            {diary.strengths && diary.strengths.length > 0 && (
+              <div className="glass-card p-6 bg-gradient-to-br from-emerald-500/5 to-green-500/5 border-emerald-400/20">
+                <h3 className="font-semibold text-gray-100 mb-4 flex items-center gap-2">
+                  <div className="p-1.5 bg-emerald-500/20 rounded-lg">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  </div>
+                  Güçlü Yönlerin
+                </h3>
+                <ul className="space-y-2.5">
+                  {diary.strengths.map((strength, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-emerald-400/70 mt-2" />
+                      <span className="text-sm text-gray-300 leading-relaxed">{strength}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {diary.weaknesses && diary.weaknesses.length > 0 && (
+              <div className="glass-card p-6 bg-gradient-to-br from-amber-500/5 to-orange-500/5 border-amber-400/20">
+                <h3 className="font-semibold text-gray-100 mb-4 flex items-center gap-2">
+                  <div className="p-1.5 bg-amber-500/20 rounded-lg">
+                    <TrendingDown className="w-4 h-4 text-amber-400" />
+                  </div>
+                  Gelişim Alanları
+                </h3>
+                <ul className="space-y-2.5">
+                  {diary.weaknesses.map((weakness, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-amber-400/70 mt-2" />
+                      <span className="text-sm text-gray-300 leading-relaxed">{weakness}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Overall Feedback */}
+        {diary.overallFeedback && (
+          <div className="glass-card p-6 mb-6 bg-gradient-to-br from-violet-500/5 to-purple-500/5 border-violet-400/20">
+            <h3 className="font-semibold text-gray-100 mb-3 flex items-center gap-2">
+              <div className="p-1.5 bg-violet-500/20 rounded-lg">
+                <Target className="w-4 h-4 text-violet-400" />
+              </div>
+              Genel Değerlendirme
+            </h3>
+            <p className="text-gray-300 leading-relaxed">{diary.overallFeedback}</p>
+          </div>
+        )}
         {/* New Words */}
         {diary.newWords.length > 0 && (
-          <div className="glass-card p-6">
+          <div className="glass-card p-6 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 border-cyan-400/20">
             <h2 className="text-lg font-bold text-gray-100 mb-5 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-cyan-400" />
-              Yeni Kelimeler ({diary.newWords.length})
+              <div className="p-1.5 bg-cyan-500/20 rounded-lg">
+                <Sparkles className="w-4 h-4 text-cyan-400" />
+              </div>
+              Yeni Kelimeler
+              <span className="ml-auto text-xs text-cyan-400/70 bg-cyan-500/10 px-2 py-1 rounded-full border border-cyan-400/20">
+                {diary.newWords.length} kelime
+              </span>
             </h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {diary.newWords.map((word, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-400/30 transition-colors"
+                  className="p-4 bg-white/5 rounded-xl border border-white/10 hover:border-cyan-400/30 hover:bg-cyan-500/5 transition-all duration-200"
                 >
-                  <div className="font-bold text-cyan-400 mb-1">
+                  <div className="font-bold text-cyan-400 mb-1.5 text-sm">
                     {word.english_word}
                   </div>
-                  <div className="text-sm text-gray-400">
+                  <div className="text-xs text-gray-400">
                     {word.turkish_meaning}
                   </div>
                 </div>
