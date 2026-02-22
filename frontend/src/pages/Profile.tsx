@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { usersApi } from '../api/users.api';
 import { authApi } from '../api/auth.api';
 import { tokenUtils } from '../utils/token';
-import type { User } from '../types/auth.types';
+import type { User, UserStats } from '../types/auth.types';
 import {
   Camera,
   Loader2,
@@ -16,6 +16,11 @@ import {
   CheckCircle,
   Trash2,
   LogOut,
+  BookOpen,
+  Flame,
+  Trophy,
+  Type,
+  AlertTriangle,
 } from 'lucide-react';
 
 // Validation schemas
@@ -42,10 +47,12 @@ type PasswordFormData = z.infer<typeof passwordSchema>;
 export default function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const [stats, setStats] = useState<UserStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   const {
     register: registerProfile,
@@ -65,15 +72,19 @@ export default function Profile() {
     resolver: zodResolver(passwordSchema),
   });
 
-  // Profil bilgilerini yükle
+  // Profil bilgileri ve istatistikleri yükle
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       try {
-        const data = await usersApi.getProfile();
-        setUser(data);
+        const [profileData, statsData] = await Promise.all([
+          usersApi.getProfile(),
+          usersApi.getStats(),
+        ]);
+        setUser(profileData);
+        setStats(statsData);
         resetProfile({
-          name: data.name || '',
-          bio: data.bio || '',
+          name: profileData.name || '',
+          bio: profileData.bio || '',
         });
       } catch (err: any) {
         setError('Profil yüklenemedi');
@@ -82,7 +93,7 @@ export default function Profile() {
       }
     };
 
-    fetchProfile();
+    fetchData();
   }, [resetProfile]);
 
   // Profil güncelle
@@ -162,6 +173,24 @@ export default function Profile() {
     }
   };
 
+  // Hesabı sil
+  const handleDeleteAccount = async () => {
+    if (!confirm('Hesabınızı kalıcı olarak silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz. Tüm günlükleriniz ve verileriniz silinecektir.')) return;
+    if (!confirm('Son kez onaylıyor musunuz? Bu işlem GERİ ALINAMAZ.')) return;
+
+    setIsDeletingAccount(true);
+    try {
+      await usersApi.deleteAccount();
+      tokenUtils.remove();
+      toast.success('Hesabınız silindi. Görüşmek üzere.');
+      navigate('/login');
+    } catch (err: any) {
+      const message = err.response?.data?.message || 'Hesap silinemedi';
+      toast.error(message);
+      setIsDeletingAccount(false);
+    }
+  };
+
   // Tüm cihazlardan çıkış
   const handleLogoutAll = async () => {
     if (!confirm('Tüm cihazlardan çıkış yapmak istediğinizden emin misiniz?')) return;
@@ -206,6 +235,48 @@ export default function Profile() {
           <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-start gap-3 backdrop-blur-sm">
             <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-green-300">{success}</p>
+          </div>
+        )}
+
+        {/* Stats Cards */}
+        {stats && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="glass-card p-4 flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-cyan-500/10">
+                <BookOpen className="w-5 h-5 text-cyan-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-100">{stats.totalEntries}</p>
+                <p className="text-xs text-gray-400">Günlük</p>
+              </div>
+            </div>
+            <div className="glass-card p-4 flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-blue-500/10">
+                <Type className="w-5 h-5 text-blue-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-100">{stats.totalWords.toLocaleString()}</p>
+                <p className="text-xs text-gray-400">Kelime</p>
+              </div>
+            </div>
+            <div className="glass-card p-4 flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-orange-500/10">
+                <Flame className="w-5 h-5 text-orange-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-100">{stats.currentStreak}</p>
+                <p className="text-xs text-gray-400">Günlük Seri</p>
+              </div>
+            </div>
+            <div className="glass-card p-4 flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-yellow-500/10">
+                <Trophy className="w-5 h-5 text-yellow-400" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-100">{stats.longestStreak}</p>
+                <p className="text-xs text-gray-400">En Uzun Seri</p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -369,6 +440,29 @@ export default function Profile() {
                   Şifreyi Değiştir
                 </button>
               </form>
+            </div>
+
+            {/* Danger Zone */}
+            <div className="glass-card p-6 border border-red-500/20">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="w-5 h-5 text-red-400" />
+                <h3 className="text-lg font-bold text-red-400">Tehlikeli Bölge</h3>
+              </div>
+              <p className="text-sm text-gray-400 mb-5">
+                Hesabınızı sildiğinizde tüm günlükleriniz, verileriniz ve ilerlemeniz kalıcı olarak silinir. Bu işlem geri alınamaz.
+              </p>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={isDeletingAccount}
+                className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/40 text-red-400 rounded-lg hover:bg-red-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isDeletingAccount ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+                <span className="font-medium">Hesabımı Kalıcı Olarak Sil</span>
+              </button>
             </div>
           </div>
         </div>
