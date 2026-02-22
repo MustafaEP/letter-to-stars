@@ -9,6 +9,15 @@ export interface AIRewriteRequest {
 export interface AIRewriteResponse {
   original_text: string;
   rewritten_text: string;
+  grammar_corrections: Array<{
+    original: string;
+    corrected: string;
+    explanation: string;
+  }>;
+  writing_tips: string[];
+  strengths: string[];
+  weaknesses: string[];
+  overall_feedback: string;
   new_words: Array<{
     english_word: string;
     turkish_meaning: string;
@@ -35,7 +44,7 @@ export class AiClientService {
         
         this.logger.log(`Sending text to AI service (level: ${ieltsLevel})`);
 
-        const response = await fetch(`${this.aiServiceUrl}/rewrite`, {
+        const response = await fetch(`${this.aiServiceUrl}/rewrite-upgrade`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
