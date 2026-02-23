@@ -54,7 +54,6 @@ export const usersApi = {
    * Hesabı kalıcı olarak sil
    */
   deleteAccount: async (): Promise<void> => {
-    const response = await apiClient.delete<void>('/users/account');
     await apiClient.delete('/users/account');
   },
 };
