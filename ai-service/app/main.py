@@ -29,7 +29,7 @@ async def health_check():
         "version": os.getenv("APP_VERSION", "dev")
     }
 
-@app.post("/rewritee", response_model=RewriteResponse)
+@app.post("/rewrite", response_model=RewriteResponse)
 async def rewrite_text(request: RewriteRequest):
     """
     Kullanıcının metnini IELTS seviyesine göre yeniden yazar. 
