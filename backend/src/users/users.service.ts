@@ -128,8 +128,8 @@ export class UsersService {
     let longestStreak = 0;
     let tempStreak = 0;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const today = new Date(now.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }));
 
     const sortedDates = diaries
       .map((d) => new Date(d.entryDate))

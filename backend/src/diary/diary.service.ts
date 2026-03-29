@@ -19,7 +19,6 @@ export class DiaryService {
     const now = new Date();
     const today = new Date(now.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }));
 
-    today.setHours(0, 0, 0, 0);
 
     const existingEntry = await this.prisma.diary.findUnique({
       where: {
@@ -94,7 +93,6 @@ export class DiaryService {
   async getTodayStatus(userId: string) {
     const now = new Date();
     const today = new Date(now.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }));
-    today.setHours(0, 0, 0, 0);
 
     const entry = await this.prisma.diary.findUnique({
       where: { userId_entryDate: { userId, entryDate: today } },
