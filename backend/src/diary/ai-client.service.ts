@@ -44,7 +44,7 @@ export class AiClientService {
         
         this.logger.log(`Sending text to AI service (level: ${ieltsLevel})`);
 
-        const response = await fetch(`${this.aiServiceUrl}/rewrite-upgrade`, {
+        const response = await fetch(`${this.aiServiceUrl}/rewrite`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
