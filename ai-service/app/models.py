@@ -62,33 +62,8 @@ class GrammarCorrection(BaseModel):
         example="Missing definite article 'the'"
     )
 
+
 class RewriteResponse(BaseModel):
-    """AI dönüşüm sonucu"""
-
-    original_text: str = Field(
-        ...,
-        description="Kullanıcının orijinal metni",
-        example="Today I went to park"
-    )
-
-    rewritten_text: str = Field(
-        ...,
-        description="IELTS seviyesine dönüştürülmüş metin",
-        example="This morning, I visited the local park to contemplate nature."
-    )
-
-    new_words: List[Word] = Field(
-        default=[],
-        description="AI' ın eklediği yeni kelimeler"
-    )
-
-    ielts_level: int = Field(
-        ...,
-        description="Uygulandığı IELTS seviyesi",
-        example=7
-    )
-
-class RewriteResponseUpgrade(BaseModel):
     """AI dönüşüm sonucu"""
 
     original_text: str = Field(
