@@ -1,13 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { LogOut, List, Plus, User, Calendar, Menu, X, BookOpen } from 'lucide-react';
+import { LogOut, List, Plus, User, Calendar, Menu, X, BookOpen, CheckCircle } from 'lucide-react';
 import { tokenUtils } from '../../utils/token';
 import { authApi } from '../../api/auth.api';
+import { diaryApi } from '../../api/diary.api';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [todayStatus, setTodayStatus] = useState<{ hasEntry: boolean; entryId: string | null } | null>(null);
+
+  useEffect(() => {
+    diaryApi.getTodayStatus().then(setTodayStatus).catch(() => {});
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     try {
@@ -73,13 +79,23 @@ export default function Navbar() {
               <span className="text-sm font-medium">Liste</span>
             </Link>
 
-            <Link
-              to="/diary"
-              className="flex items-center gap-2 px-5 py-2 btn-primary"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="text-sm font-medium">Yeni Günlük</span>
-            </Link>
+            {todayStatus?.hasEntry ? (
+              <Link
+                to={`/diary/${new Date().toISOString().split('T')[0]}`}
+                className="flex items-center gap-2 px-5 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 transition-all duration-300 hover:bg-emerald-500/30"
+              >
+                <CheckCircle className="w-4 h-4" />
+                <span className="text-sm font-medium">Bugün Yazıldı ✓</span>
+              </Link>
+            ) : (
+              <Link
+                to="/diary"
+                className="flex items-center gap-2 px-5 py-2 btn-primary"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="text-sm font-medium">Yeni Günlük</span>
+              </Link>
+            )}
             <Link
               to="/vocabulary"
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
@@ -152,14 +168,25 @@ export default function Navbar() {
               <span className="text-sm font-medium">Liste</span>
             </Link>
 
-            <Link
-              to="/diary"
-              onClick={handleNavClick}
-              className="flex items-center gap-2 px-4 py-3 btn-primary w-full justify-center"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="text-sm font-medium">Yeni Günlük</span>
-            </Link>
+            {todayStatus?.hasEntry ? (
+              <Link
+                to={`/diary/${new Date().toISOString().split('T')[0]}`}
+                onClick={handleNavClick}
+                className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 w-full justify-center transition-all duration-300"
+              >
+                <CheckCircle className="w-4 h-4" />
+                <span className="text-sm font-medium">Bugün Yazıldı ✓</span>
+              </Link>
+            ) : (
+              <Link
+                to="/diary"
+                onClick={handleNavClick}
+                className="flex items-center gap-2 px-4 py-3 btn-primary w-full justify-center"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="text-sm font-medium">Yeni Günlük</span>
+              </Link>
+            )}
 
             <Link
               to="/vocabulary"

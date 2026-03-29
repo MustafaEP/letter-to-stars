@@ -91,6 +91,14 @@ export const diaryApi = {
   },
 
   /**
+   * Bugün günlük girilip girilmediğini kontrol et
+   */
+  getTodayStatus: async (): Promise<{ hasEntry: boolean; entryId: string | null }> => {
+    const response = await apiClient.get('/diary/today/status');
+    return response.data;
+  },
+
+  /**
    * Kelime listesi
    */
   getVocabulary: async (): Promise<VocabularyResponse> => {

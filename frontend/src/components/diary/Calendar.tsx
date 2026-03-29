@@ -40,14 +40,20 @@ export default function Calendar() {
   // Önceki aydan gösterilecek günler
   const paddingDays = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
 
+  // ISO tarih string'ini timezone offset olmadan parse et
+  const parseEntryDate = (dateStr: string) => {
+    const [year, month, day] = dateStr.split('T')[0].split('-').map(Number);
+    return new Date(year, month - 1, day);
+  };
+
   // Günlük var mı kontrol et
   const hasEntry = (day: Date) => {
-    return entries.some((entry) => isSameDay(new Date(entry.entryDate), day));
+    return entries.some((entry) => isSameDay(parseEntryDate(entry.entryDate), day));
   };
 
   // Günlük detayına git
   const handleDayClick = (day: Date) => {
-    const entry = entries.find((e) => isSameDay(new Date(e.entryDate), day));
+    const entry = entries.find((e) => isSameDay(parseEntryDate(e.entryDate), day));
     if (entry) {
       const dateString = format(day, 'yyyy-MM-dd');
       navigate(`/diary/${dateString}`);

@@ -4,14 +4,15 @@ import { diaryApi } from '../api/diary.api';
 import type { DiaryListResponse } from '../types/diary.types';
 import Layout from '../components/layout/Layout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
-import { 
-  TrendingUp, 
-  ChevronLeft, 
+import {
+  TrendingUp,
+  ChevronLeft,
   ChevronRight,
   Plus,
   Star,
   Image as ImageIcon,
   Sparkles,
+  CheckCircle,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -21,6 +22,11 @@ export default function DiaryList() {
   const [data, setData] = useState<DiaryListResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [todayStatus, setTodayStatus] = useState<{ hasEntry: boolean; entryId: string | null } | null>(null);
+
+  useEffect(() => {
+    diaryApi.getTodayStatus().then(setTodayStatus).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const fetchDiaries = async () => {
@@ -65,13 +71,23 @@ export default function DiaryList() {
             </p>
           </div>
 
-          <button
-            onClick={() => navigate('/diary')}
-            className="btn-primary flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Yeni Günlük</span>
-          </button>
+          {todayStatus?.hasEntry ? (
+            <button
+              onClick={() => navigate(`/diary/${new Date().toISOString().split('T')[0]}`)}
+              className="flex items-center gap-2 px-5 py-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 transition-all duration-300 hover:bg-emerald-500/30"
+            >
+              <CheckCircle className="w-5 h-5" />
+              <span>Bugün Yazıldı ✓</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/diary')}
+              className="btn-primary flex items-center gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              <span>Yeni Günlük</span>
+            </button>
+          )}
         </div>
 
         {/* Empty State */}
