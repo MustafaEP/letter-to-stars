@@ -88,6 +88,7 @@ export class UsersController {
       },
     }),
   )
+  
   async uploadProfilePicture(
     @CurrentUser() user: { id: string },
     @UploadedFile() file: Express.Multer.File,

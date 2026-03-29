@@ -16,7 +16,9 @@ export class DiaryService {
    */
   async create(userId: string, dto: CreateDiaryDto): Promise<DiaryResponseDto> {
     // 1. Bugün zaten entry var mı kontrol et
-    const today = new Date();
+    const now = new Date();
+    const today = new Date(now.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }));
+
     today.setHours(0, 0, 0, 0);
 
     const existingEntry = await this.prisma.diary.findUnique({
@@ -86,6 +88,21 @@ export class DiaryService {
     };
   }
 
+  /**
+   * Bugün günlük girilip girilmediğini kontrol et 
+   */
+  async getTodayStatus(userId: string) {
+    const now = new Date();
+    const today = new Date(now.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }));
+    today.setHours(0, 0, 0, 0);
+
+    const entry = await this.prisma.diary.findUnique({
+      where: { userId_entryDate: { userId, entryDate: today } },
+      select: { id: true },
+    });
+
+    return { hasEntry: !!entry, entryId: entry?.id ?? null };
+  }
 
   /**
    * Kelime listesi
@@ -353,4 +370,6 @@ export class DiaryService {
       createdAt: diary.createdAt,
     };
   }
+
+  
 }

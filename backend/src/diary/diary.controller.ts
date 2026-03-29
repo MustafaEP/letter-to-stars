@@ -91,6 +91,15 @@ export class DiaryController {
   }
 
   /**
+   * GET /api/diary/today/status
+   * Bugün günlük girilip girilmediğini kontrol et
+   */
+  @Get('today/status')
+  async getTodayStatus(@CurrentUser() user: { id: string }) {
+    return this.diaryService.getTodayStatus(user.id);
+  }
+
+  /**
    * GET /api/diary/:date
    * Belirli tarihteki günlüğü getir (YYYY-MM-DD)
    * ÖNEMLİ: Tüm özel route'lardan SONRA olmalı!
