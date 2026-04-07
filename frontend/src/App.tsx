@@ -14,9 +14,12 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import OfflineIndicator from './components/OfflineIndicator';
 import VocabularyPage from './pages/VocabularyPage';
+import Landing from './pages/Landing';
+import { tokenUtils } from './utils/token';
 
 function App() {
   useOnlineStatus();  
+  const isAuthenticated = tokenUtils.isValid();
   return (
     <ErrorBoundary>
       <BrowserRouter>
@@ -101,8 +104,11 @@ function App() {
             }
           />
 
-          {/* Redirect */}
-          <Route path="/" element={<Navigate to="/diary/calendar" replace />} />
+          {/* Public Home */}
+          <Route
+            path="/"
+            element={isAuthenticated ? <Navigate to="/diary/calendar" replace /> : <Landing />}
+          />
           
           {/* 404 - Catch all */}
           <Route path="*" element={<NotFound />} />

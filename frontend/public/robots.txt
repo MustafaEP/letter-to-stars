@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /auth/callback
+Disallow: /diary
+Disallow: /diary/
+Disallow: /profile
+Disallow: /vocabulary
+
+User-agent: Bingbot
+Crawl-delay: 2
+
+User-agent: Slurp
+Crawl-delay: 2
+
+Sitemap: https://lettertostars.mustafaerhanportakal.com/sitemap.xml
